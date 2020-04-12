@@ -135,7 +135,11 @@ const Option = (
 					}
 				);
 			}
-			else{
+			else if(
+					typeof
+					optionData
+				!= "undefined"
+			){
 				Object
 				.defineProperty(
 					this,
@@ -151,6 +155,31 @@ const Option = (
 								this,
 
 								[ optionData ]
+							)
+						),
+
+						"configurable": false,
+						"enumerable": false,
+						"writable": false
+					}
+				);
+			}
+			else{
+				Object
+				.defineProperty(
+					this,
+
+					"$optionData",
+
+					{
+						"value": (
+							(
+								new WeakMap( )
+							)
+							.set(
+								this,
+
+								{ }
 							)
 						),
 
@@ -223,6 +252,16 @@ Option.prototype.set = (
 			]
 		=	value;
 
+		if(
+				(
+						property
+					in	this
+				)
+			===	true
+		){
+			return	this;
+		}
+
 		Object
 		.defineProperty(
 			this,
@@ -249,7 +288,7 @@ Option.prototype.set = (
 			}
 		);
 
-		return this;
+		return	this;
 	}
 );
 

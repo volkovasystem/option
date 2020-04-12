@@ -8,7 +8,8 @@
 	"minify-module": "npx terser option.module.js --compress --output option.js",
 	"modularize": "npx babel --plugins @babel/plugin-transform-modules-umd option.js --out-file option.js",
 	"minify": "npx terser option.js --compress --output option.js",
-	"build": "npm run minify-module && npm run modularize && npm run minify"
+	"build": "npm run minify-module && npm run modularize && npm run minify",
+	"prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
