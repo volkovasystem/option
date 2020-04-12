@@ -1,0 +1,32 @@
+{
+  "name": "@volkovasystem/option",
+  "version": "0.0.0",
+  "description": "Option class interface for procedure parameter.",
+  "main": "option.js",
+  "scripts": {
+    "test": "test option.test.js",
+	"minify-module": "npx terser option.module.js --compress --output option.js",
+	"modularize": "npx babel --plugins @babel/plugin-transform-modules-umd option.js --out-file option.js",
+	"minify": "npx terser option.js --compress --output option.js",
+	"build": "npm run minify-module && npm run modularize && npm run minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/volkovasystem/option.git"
+  },
+  "keywords": [
+    "option",
+    "parameter"
+  ],
+  "author": "Richeve S. Bebedor <richeve.bebedor@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/volkovasystem/option/issues"
+  },
+  "homepage": "https://github.com/volkovasystem/option#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-modules-umd": "^7.9.0"
+  }
+}
