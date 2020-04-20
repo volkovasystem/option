@@ -202,8 +202,342 @@ const Option = (
 	}
 );
 
+Object
+.defineProperty(
+	Option,
+
+	"namespace",
+
+	{
+		"value": "Option",
+
+		"configurable": false,
+		"enumerable": true,
+		"writable": false
+	}
+);
+
+Object
+.defineProperty(
+	Option,
+
+	"type",
+
+	{
+		"value": (
+			Object
+			.freeze(
+				[
+					"class",
+					"object",
+					"option"
+				]
+			)
+		),
+
+		"configurable": false,
+		"enumerable": true,
+		"writable": false
+	}
+);
+
+Object
+.defineProperty(
+	Option,
+
+	"checkOption",
+
+	{
+		"value": (
+			function checkOption( entity ){
+				/*;
+					@parameter-definition:
+						{
+							"entity": "
+								[
+									@type:
+											boolean
+										|	function
+										|	object
+										|	number
+										|	string
+										|	symbol
+										|	undefined
+
+									<@required>
+								]
+							"
+						}
+					@end-parameter-definition
+
+					@result-definition:
+						{
+							"result": "[@type: boolean]"
+						}
+					@end-result-definition
+				*/
+
+				return	(
+								(
+										typeof
+										entity
+									==	"object"
+								)
+
+							&&	(
+										(
+												(
+																entity
+													instanceof	Option
+												)
+											===	true
+										)
+
+									||	(
+												(
+														typeof
+														(
+															option
+															.constructor
+															.namespace
+														)
+													==	"string"
+												)
+
+											&&	(
+														(
+															option
+															.constructor
+															.namespace
+															.length
+														)
+													>	0
+												)
+
+											&&	(
+														(
+															option
+															.constructor
+															.namespace
+														)
+													===	(
+															Option
+															.namespace
+														)
+												)
+										)
+
+									||	(
+												(
+														typeof
+														(
+															entity
+															.$type
+														)
+													==	"object"
+												)
+
+											&&	(
+														entity
+														.$type
+													!==	null
+												)
+
+											&&	(
+														Array
+														.isArray(
+															entity
+															.$type
+														)
+													===	true
+												)
+
+											&&	(
+														(
+															Option
+															.type
+															.every(
+																( type ) => (
+																	entity
+																	.$type
+																	.includes(
+																		type
+																	)
+																)
+															)
+														)
+													===	true
+												)
+										)
+								)
+						);
+			}
+		),
+
+		"configurable": false,
+		"enumerable": false,
+		"writable": false
+	}
+);
+
 Option.prototype.set = (
-	function set( property, value ){
+	function set( property, value, scopeData ){
+		/*;
+			@parameter-definition:
+				{
+					"property": "
+						[
+							@type:
+									number
+								|	string
+								|	symbol
+
+							<@required>
+						]
+					",
+					"value": "
+						[
+							@type:
+									boolean
+								|	function
+								|	object
+								|	number
+								|	string
+								|	symbol
+								|	undefined
+
+							<@required>
+						]
+					",
+					"scopeData": "
+						[
+							@type:
+									object
+
+							<@optional>
+						]
+					"
+				}
+			@end-parameter-definition
+
+			@trigger-definition:
+				{
+					"trigger": "
+						[
+							@type:
+								object as Error
+
+							<@tag: invalid-set-option-scope-data>
+							<@tag: invalid-set-option-property>
+						]
+					"
+				}
+			@end-trigger-definition
+
+			@result-definition:
+				{
+					"result": "[@type: object as Option]"
+				}
+			@end-result-definition
+		*/
+
+		if(
+				(
+						typeof
+						scopeData
+					==	"object"
+				)
+
+			&&	(
+						scopeData
+					!==	null
+				)
+		){
+			this
+			.setScope(
+				scopeData
+			);
+		}
+
+		if(
+				(
+						typeof
+						property
+					==	"string"
+				)
+
+			||	(
+						typeof
+						property
+					==	"number"
+				)
+
+			||	(
+						typeof
+						property
+					==	"symbol"
+				)
+		){
+				this
+				.getScope( )[
+					property
+				]
+			=	value;
+		}
+		else{
+			throw	(
+						new	Error(
+								[
+									"#invalid-set-option-property;",
+
+									"cannot set option property",
+									"invalid property",
+
+									`@property: ${ property }`
+								]
+							)
+					);
+		}
+
+		if(
+				(
+						property
+					in	this
+				)
+			===	true
+		){
+			return	this;
+		}
+
+		Object
+		.defineProperty(
+			this,
+
+			property,
+
+			{
+				"configurable": false,
+				"enumerable": false,
+
+				"get": (
+					function get( ){
+						return	(
+									this
+									.getScope( )[
+										property
+									]
+								);
+					}
+				)
+			}
+		);
+
+		return	this;
+	}
+);
+
+Option.prototype.setOption = (
+	function setOption( property, value ){
 		/*;
 			@parameter-definition:
 				{
@@ -234,6 +568,20 @@ Option.prototype.set = (
 				}
 			@end-parameter-definition
 
+			@trigger-definition:
+				{
+					"trigger": "
+						[
+							@type:
+								object as Error
+
+							<@tag: invalid-set-option-scope-data>
+							<@tag: invalid-set-option-property>
+						]
+					"
+				}
+			@end-trigger-definition
+
 			@result-definition:
 				{
 					"result": "[@type: object as Option]"
@@ -241,58 +589,149 @@ Option.prototype.set = (
 			@end-result-definition
 		*/
 
-			(
-				this
-				.$optionData
-				.get(
+		return	(
 					this
-				)
-			)[
-				property
-			]
-		=	value;
+					.set(
+						property,
+						value
+					)
+				);
+	}
+);
+
+Option.prototype.getOption = (
+	function getOption( property ){
+		/*;
+			@parameter-definition:
+				{
+					"property": "
+						[
+							@type:
+									number
+								|	string
+								|	symbol
+
+							<@required>
+						]
+					"
+				}
+			@end-parameter-definition
+
+			@result-definition:
+				{
+					"result": "[@type: string]"
+				}
+			@end-result-definition
+		*/
+
+		return	this[ property ];
+	}
+);
+
+Option.prototype.checkOption = (
+	function checkOption( optionQuery ){
+
+	}
+);
+
+Option.prototype.setScope = (
+	function setScope( scopeData ){
+		/*;
+			@procedure-definition:
+				Set option data container scope.
+			@end-procedure-definition
+
+			@trigger-definition:
+				{
+					"trigger": "
+						[
+							@type:
+								object as Error
+
+							<@tag: invalid-set-option-scope-data>
+						]
+					"
+				}
+			@end-trigger-definition
+
+			@result-definition:
+				{
+					"result": "[@type: object as Option]"
+				}
+			@end-result-definition
+		*/
 
 		if(
 				(
-						property
-					in	this
+						typeof
+						scopeData
+					==	"object"
 				)
-			===	true
+
+			&&	(
+						scopeData
+					!==	null
+				)
 		){
-			return	this;
+			this
+			.$optionData
+			.set(
+				this,
+				scopeData
+			);
 		}
+		else{
+			throw	(
+						new	Error(
+								[
+									"#invalid-set-option-scope-data;",
 
-		Object
-		.defineProperty(
-			this,
+									"cannot set option scope data",
+									"invalid scope data",
 
-			property,
-
-			{
-				"configurable": false,
-				"enumerable": false,
-
-				"get": (
-					function get( ){
-						return	(
-									this
-									.$optionData
-									.get(
-										this
-									)[
-										property
-									]
-								);
-					}
-				)
-			}
-		);
+									`@scope-data: ${ scopeData }`
+								]
+							)
+					);
+		}
 
 		return	this;
 	}
 );
 
+Option.prototype.getScope = (
+	function getScope( ){
+		/*;
+			@procedure-definition:
+				Get option data container scope.
+			@end-procedure-definition
+
+			@result-definition:
+				{
+					"result": "[@type: object]"
+				}
+			@end-result-definition
+		*/
+
+		return	(
+					this
+					.$optionData
+					.get(
+						this
+					)
+				);
+	}
+);
+
 Option.prototype.valueOf = (
+	/*;
+		@result-definition:
+			{
+				"result": "[@type: object]"
+			}
+		@end-result-definition
+	*/
+
 	function valueOf( ){
 		return	(
 					Object
@@ -303,10 +742,7 @@ Option.prototype.valueOf = (
 
 							(
 								this
-								.$optionData
-								.get(
-									this
-								)
+								.getScope( )
 							)
 						)
 					)
@@ -323,6 +759,7 @@ Option.prototype.toString = (
 				}
 			@end-result-definition
 		*/
+
 		if(
 				typeof
 				require
@@ -332,18 +769,17 @@ Option.prototype.toString = (
 
 			if(
 					typeof
-					util
-					.inspect
+					(
+						util
+						.inspect
+					)
 				==	"function"
 			){
 				return	(
 							util
 							.inspect(
 								this
-								.$optionData
-								.get(
-									this
-								)
+								.getScope( )
 							)
 						);
 			}
@@ -353,10 +789,7 @@ Option.prototype.toString = (
 					JSON
 					.stringify(
 						this
-						.$optionData
-						.get(
-							this
-						)
+						.getScope( )
 					)
 				);
 	}
