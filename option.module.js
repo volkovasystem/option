@@ -5,7 +5,20 @@
 		MIT License
 
 		Copyright (c) 2020 Richeve S. Bebedor <richeve.bebedor@gmail.com>
-		@copyright: Richeve S. Bebedor <@year: 2020> <@contact: richeve.bebedor@gmail.com>
+
+		@copyright:
+			Richeve S. Bebedor
+			<
+				@year:
+					2020
+				@end-year
+			>
+			<
+				@contact:
+					richeve.bebedor@gmail.com
+				@end-contact
+			>
+		@end-copyright
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -30,25 +43,110 @@
 const Option = (
 	function Option( optionData ){
 		/*;
+			@class-procedure-definition:
+			@end-class-procedure-definition
+
 			@parameter-definition:
 				{
-					"optionData": "[@type: object|object as Option]"
+					"optionData": "
+						[
+							@type:
+									object
+								|	object as Option
+							@end-type:
+
+							<
+								@property-definition:
+								@end-property-definition
+							>
+						]
+					"
 				}
 			@end-parameter-definition
 
 			@result-definition:
 				{
-					"result": "[@type: object as Option]"
+					"result": "
+						[
+							@type:
+									object as Option
+							@end-type
+						]
+					"
 				}
 			@end-result-definition
+
+			@static-property-definition:
+				{
+					"namespace": "
+						[
+							@type:
+									string
+
+								<
+									@default-value:
+										Option
+									@end-default-value
+								>
+							@end-type
+
+							<
+								@property-definition:
+								@end-property-definition
+							>
+						]
+					",
+
+					"type": "
+						[
+							@type:
+									object as Array of string
+
+								<
+									@default-value:
+										class
+										object
+										option
+									@end-default-value
+								>
+							@end-type
+
+							<
+								@property-definition:
+								@end-property-definition
+							>
+						]
+					",
+				}
+			@end-static-property-definition
+
+			@static-procedure-definition:
+				{
+					"checkOption": "
+						[
+							@type:
+									function as checkOption
+							@end-type
+
+							<
+								@procedure-definition:
+									Check if object instance of Option class.
+								@end-procedure-definition
+							>
+						]
+					"
+				}
+			@end-static-procedure-definition
 		*/
 
 		if(
 				(
-								this
-					instanceof	Option
+						(
+										this
+							instanceof	Option
+						)
+					===	true
 				)
-			===	true
 		){
 			if(
 					(
@@ -100,9 +198,11 @@ const Option = (
 				);
 			}
 			else if(
-					typeof
-					optionData
-				==	"object"
+					(
+							typeof
+							optionData
+						==	"object"
+					)
 			){
 				Object
 				.defineProperty(
@@ -136,9 +236,11 @@ const Option = (
 				);
 			}
 			else if(
-					typeof
-					optionData
-				!= "undefined"
+					(
+							typeof
+							optionData
+						!=	"undefined"
+					)
 			){
 				Object
 				.defineProperty(
@@ -263,8 +365,9 @@ Object
 										|	string
 										|	symbol
 										|	undefined
+									@end-type
 
-									<@required>
+									<@required;>
 								]
 							"
 						}
@@ -272,7 +375,13 @@ Object
 
 					@result-definition:
 						{
-							"result": "[@type: boolean]"
+							"result": "
+								[
+									@type:
+											boolean
+									@end-type
+								]
+							"
 						}
 					@end-result-definition
 				*/
@@ -297,8 +406,10 @@ Object
 												(
 														typeof
 														(
-															option
-															.constructor
+															(
+																option
+																.constructor
+															)
 															.namespace
 														)
 													==	"string"
@@ -306,9 +417,11 @@ Object
 
 											&&	(
 														(
-															option
-															.constructor
-															.namespace
+															(
+																option
+																.constructor
+																.namespace
+															)
 															.length
 														)
 													>	0
@@ -316,8 +429,10 @@ Object
 
 											&&	(
 														(
-															option
-															.constructor
+															(
+																option
+																.constructor
+															)
 															.namespace
 														)
 													===	(
@@ -354,12 +469,16 @@ Object
 
 											&&	(
 														(
-															Option
-															.type
+															(
+																Option
+																.type
+															)
 															.every(
 																( type ) => (
-																	entity
-																	.$type
+																	(
+																		entity
+																		.$type
+																	)
 																	.includes(
 																		type
 																	)
@@ -383,6 +502,9 @@ Object
 Option.prototype.set = (
 	function set( property, value, scopeData ){
 		/*;
+			@procedure-definition:
+			@end-procedure-definition
+
 			@parameter-definition:
 				{
 					"property": "
@@ -391,8 +513,9 @@ Option.prototype.set = (
 									number
 								|	string
 								|	symbol
+							@end-type
 
-							<@required>
+							<@required;>
 						]
 					",
 					"value": "
@@ -405,16 +528,18 @@ Option.prototype.set = (
 								|	string
 								|	symbol
 								|	undefined
+							@end-type
 
-							<@required>
+							<@required;>
 						]
 					",
 					"scopeData": "
 						[
 							@type:
 									object
+							@end-type
 
-							<@optional>
+							<@optional;>
 						]
 					"
 				}
@@ -425,10 +550,11 @@ Option.prototype.set = (
 					"trigger": "
 						[
 							@type:
-								object as Error
+									object as Error
+							@end-type
 
-							<@tag: invalid-set-option-scope-data>
-							<@tag: invalid-set-option-property>
+							<@tag: invalid-set-option-scope-data;>
+							<@tag: invalid-set-option-property;>
 						]
 					"
 				}
@@ -436,7 +562,13 @@ Option.prototype.set = (
 
 			@result-definition:
 				{
-					"result": "[@type: object as Option]"
+					"result": "
+						[
+							@type:
+									object as Option
+							@end-type
+						]
+					"
 				}
 			@end-result-definition
 		*/
@@ -539,6 +671,9 @@ Option.prototype.set = (
 Option.prototype.setOption = (
 	function setOption( property, value ){
 		/*;
+			@procedure-definition:
+			@end-procedure-definition
+
 			@parameter-definition:
 				{
 					"property": "
@@ -547,10 +682,12 @@ Option.prototype.setOption = (
 									number
 								|	string
 								|	symbol
+							@end-type
 
-							<@required>
+							<@required;>
 						]
 					",
+
 					"value": "
 						[
 							@type:
@@ -561,8 +698,9 @@ Option.prototype.setOption = (
 								|	string
 								|	symbol
 								|	undefined
+							@end-type
 
-							<@required>
+							<@required;>
 						]
 					"
 				}
@@ -573,10 +711,11 @@ Option.prototype.setOption = (
 					"trigger": "
 						[
 							@type:
-								object as Error
+									object as Error
+							@end-type
 
-							<@tag: invalid-set-option-scope-data>
-							<@tag: invalid-set-option-property>
+							<@tag: invalid-set-option-scope-data;>
+							<@tag: invalid-set-option-property;>
 						]
 					"
 				}
@@ -584,7 +723,13 @@ Option.prototype.setOption = (
 
 			@result-definition:
 				{
-					"result": "[@type: object as Option]"
+					"result": "
+						[
+							@type:
+									object as Option
+							@end-type
+						]
+					"
 				}
 			@end-result-definition
 		*/
@@ -602,6 +747,9 @@ Option.prototype.setOption = (
 Option.prototype.getOption = (
 	function getOption( property ){
 		/*;
+			@procedure-definition:
+			@end-procedure-definition
+
 			@parameter-definition:
 				{
 					"property": "
@@ -610,8 +758,9 @@ Option.prototype.getOption = (
 									number
 								|	string
 								|	symbol
+							@end-type
 
-							<@required>
+							<@required;>
 						]
 					"
 				}
@@ -619,7 +768,13 @@ Option.prototype.getOption = (
 
 			@result-definition:
 				{
-					"result": "[@type: string]"
+					"result": "
+						[
+							@type:
+									string
+							@end-type
+						]
+					"
 				}
 			@end-result-definition
 		*/
@@ -630,7 +785,83 @@ Option.prototype.getOption = (
 
 Option.prototype.checkOption = (
 	function checkOption( optionQuery ){
+		/*;
+			@procedure-definition:
+			@end-procedure-definition
 
+			@parameter-definition:
+				{
+					"optionQuery": "
+						[
+							@type:
+							@end-type
+
+							<@optional;>
+						]
+					"
+				}
+			@end-parameter-definition
+
+			@result-definition:
+				{
+					"result": "
+						[
+							@type:
+									boolean
+							@end-type
+						]
+					"
+				}
+			@end-result-definition
+		*/
+
+		if(
+				(
+						typeof
+						optionQuery
+					==	"undefined"
+				)
+
+			||	(
+						arguments
+						.length
+					<=	0
+				)
+		){
+			return	(
+							(
+									(
+										Object
+										.keys(
+											(
+												this
+												.getScope( )
+											)
+											.$optionData
+										)
+									)
+									.length
+								>	0
+							)
+					);
+		}
+		else{
+			return	(
+							(
+									(
+											optionQuery
+										in	this
+									)
+								===	true
+							)
+
+						||	(
+									typeof
+									this[ optionQuery ]
+								!=	"undefined"
+							)
+					);
+		}
 	}
 );
 
@@ -641,14 +872,29 @@ Option.prototype.setScope = (
 				Set option data container scope.
 			@end-procedure-definition
 
+			@parameter-definition:
+				{
+					"scopeData": "
+						[
+							@type:
+									object
+							@end-type
+
+							<@required;>
+						]
+					"
+				}
+			@end-parameter-definition
+
 			@trigger-definition:
 				{
 					"trigger": "
 						[
 							@type:
-								object as Error
+									object as Error
+							@end-type
 
-							<@tag: invalid-set-option-scope-data>
+							<@tag: invalid-set-option-scope-data;>
 						]
 					"
 				}
@@ -656,7 +902,13 @@ Option.prototype.setScope = (
 
 			@result-definition:
 				{
-					"result": "[@type: object as Option]"
+					"result": "
+						[
+							@type:
+									object as Option
+							@end-type
+						]
+					"
 				}
 			@end-result-definition
 		*/
@@ -673,8 +925,10 @@ Option.prototype.setScope = (
 					!==	null
 				)
 		){
-			this
-			.$optionData
+			(
+				this
+				.$optionData
+			)
 			.set(
 				this,
 				scopeData
@@ -708,14 +962,22 @@ Option.prototype.getScope = (
 
 			@result-definition:
 				{
-					"result": "[@type: object]"
+					"result": "
+						[
+							@type:
+									object
+							@end-type
+						]
+					"
 				}
 			@end-result-definition
 		*/
 
 		return	(
-					this
-					.$optionData
+					(
+						this
+						.$optionData
+					)
 					.get(
 						this
 					)
@@ -724,15 +986,24 @@ Option.prototype.getScope = (
 );
 
 Option.prototype.valueOf = (
-	/*;
-		@result-definition:
-			{
-				"result": "[@type: object]"
-			}
-		@end-result-definition
-	*/
-
 	function valueOf( ){
+		/*;
+			@procedure-definition:
+			@end-procedure-definition
+
+			@result-definition:
+				{
+					"result": "
+						[
+							@type:
+									object
+							@end-type
+						]
+					"
+				}
+			@end-result-definition
+		*/
+
 		return	(
 					Object
 					.freeze(
@@ -753,27 +1024,40 @@ Option.prototype.valueOf = (
 Option.prototype.toString = (
 	function toString( ){
 		/*;
+			@procedure-definition:
+			@end-procedure-definition
+
 			@result-definition:
 				{
-					"result": "[@type: string]"
+					"result": "
+						[
+							@type:
+									string
+							@end-type
+						]
+					"
 				}
 			@end-result-definition
 		*/
 
 		if(
-				typeof
-				require
-			==	"function"
+				(
+						typeof
+						require
+					==	"function"
+				)
 		){
 			const util = require( "util" );
 
 			if(
-					typeof
 					(
-						util
-						.inspect
+							typeof
+							(
+								util
+								.inspect
+							)
+						==	"function"
 					)
-				==	"function"
 			){
 				return	(
 							util
