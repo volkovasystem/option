@@ -5,11 +5,13 @@
   "main": "option.js",
   "scripts": {
     "test": "node ./option.test.js",
-    "minify-module": "npx terser option.module.js --compress --output option.js",
-    "modularize": "npx babel --plugins @babel/plugin-transform-modules-umd option.js --out-file option.js",
-    "minify": "npx terser option.js --compress --output option.js",
-    "build": "npm run minify-module && npm run modularize && npm run minify",
-    "prepublishOnly": "npm test && npm run build"
+    "clean": "rm -Rfv ./node_modules && rm ./option.js",
+    "compress": "npx terser ./option.module.js --compress --comments all --output ./option.js",
+    "modularize": "npx babel --plugins @babel/plugin-transform-modules-umd ./option.js --out-file ./option.js",
+    "minify": "npx terser ./option.js --compress --comments all --output ./option.js",
+    "build": "npm run compress && npm run modularize && npm run minify",
+    "deploy": "npm run clean && npm install && npm run build && npm test",
+    "prepublishOnly": "npm run clean && npm install && npm run build && npm test"
   },
   "repository": {
     "type": "git",
