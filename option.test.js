@@ -6,14 +6,18 @@ const strictAssert = assert.strict;
 
 const Option = require( "./option.js" );
 
-strictAssert
-.equal(
-	(
-					Option( )
-		instanceof	Option
-	),
+(
+	function( ){
+		strictAssert
+		.equal(
+			(
+							Option( )
+				instanceof	Option
+			),
 
-	true,
+			true,
 
-	"Option function call must return an instance of Option"
-);
+			"Option function call must return an instance of Option."
+		);
+	}
+)( );
