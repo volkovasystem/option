@@ -184,7 +184,7 @@ const Option = (
 
 										(
 											optionData
-											.$entity
+											.$optionData
 										)
 									)
 								)
