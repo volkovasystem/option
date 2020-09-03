@@ -1,24 +1,19 @@
 "use strict";
 
 /*;
-	@module-license:
+	@license;
+	@start:license:module:
 		MIT License
 
-		Copyright (c) 2020 Richeve S. Bebedor <richeve.bebedor@gmail.com>
+		Copyright (c) 2020-present Richeve S. Bebedor <richeve.bebedor@gmail.com>
 
-		@copyright:
+		@start:license:copyright:
 			Richeve S. Bebedor
-			<
-				@year:
-					2020
-				@end-year
-			>
-			<
-				@contact:
-					richeve.bebedor@gmail.com
-				@end-contact
-			>
-		@end-copyright
+
+			<@license:year-range:2020-present;>
+
+			<@license:contact-detail:richeve.bebedor@gmail.com;>
+		@end:license:copyright;
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -37,107 +32,168 @@
 		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		SOFTWARE.
-	@end-module-license
+	@end:license:module;
 */
 
+const INTERNAL_OPTION = (
+	Symbol( "internal-option" )
+);
+
 const Option = (
-	function Option( optionData ){
+	function Option( optionData, providerList ){
 		/*;
-			@class-procedure-definition:
-			@end-class-procedure-definition
+			@definition:
+				@class:#Option
+					@description:
+					@description;
+				@class;
 
-			@parameter-definition:
-				{
-					"optionData": "
-						[
-							@type:
-									object
-								|	object as Option
-							@end-type:
+				@parameter:#optionData
+					@type:
+							object
+						|	object:as:Option
+					@type;
 
-							<
-								@property-definition:
-								@end-property-definition
-							>
-						]
-					"
-				}
-			@end-parameter-definition
+					@description:
+					@description;
+				@parameter;
 
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object as Option
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
+				@result:#result
+					@type:
+							object:as:Option
+					@type;
 
-			@static-property-definition:
-				{
-					"namespace": "
-						[
-							@type:
-									string
+					@description:
+					@description;
+				@result;
 
-								<
-									@default-value:
-										Option
-									@end-default-value
-								>
-							@end-type
+				@trigger:#trigger
+					@type:
+							object:as:Error
+					@type;
 
-							<
-								@property-definition:
-								@end-property-definition
-							>
-						]
-					",
+					@description:
+					@description;
 
-					"type": "
-						[
-							@type:
-									object as Array of string
-
-								<
-									@default-value:
-										class
-										object
-										option
-									@end-default-value
-								>
-							@end-type
-
-							<
-								@property-definition:
-								@end-property-definition
-							>
-						]
-					",
-				}
-			@end-static-property-definition
-
-			@static-procedure-definition:
-				{
-					"checkOption": "
-						[
-							@type:
-									function as checkOption
-							@end-type
-
-							<
-								@procedure-definition:
-									Check if object instance of Option class.
-								@end-procedure-definition
-							>
-						]
-					"
-				}
-			@end-static-procedure-definition
+					@tag:#cannot-create-option-object;
+				@trigger;
+			@definition;
 		*/
+
+		const resolveParameterList = (
+			function resolveParameterList( ){
+				const parameterList = (
+					Array
+					.from(
+						(
+							arguments
+						)
+					)
+				);
+
+				const optionCache = (
+					parameterList
+					.find(
+						(
+							( parameter ) => (
+									(
+											typeof
+											parameter
+										==	"object"
+									)
+
+								&&	(
+											parameter
+										!==	null
+									)
+
+								&&	(
+											Array
+											.isArray(
+												(
+													parameter
+												)
+											)
+										!==	true
+									)
+							)
+						)
+					)
+				);
+
+				const providerCache = (
+					parameterList
+					.reduce(
+						(
+							( list, parameter ) => {
+								if(
+										(
+												typeof
+												parameter
+											==	"function"
+										)
+								){
+									list
+									.push(
+										(
+											parameter
+										)
+									);
+								}
+								else if(
+										(
+												Array
+												.isArray(
+													(
+														parameter
+													)
+												)
+											===	true
+										)
+								){
+									parameter
+									.forEach(
+										(
+											( provider ) => {
+												if(
+														(
+																typeof
+																provider
+															==	"function"
+														)
+												){
+													list
+													.push(
+														(
+															provider
+														)
+													);
+												}
+											}
+										)
+									);
+								}
+
+								return	(
+											list
+										);
+							}
+						),
+
+						(
+							[ ]
+						)
+					)
+				);
+
+				return	(
+							[
+								optionCache,
+								providerCache
+							]
+						);
+			}
+		);
 
 		if(
 				(
@@ -148,932 +204,323 @@ const Option = (
 					===	true
 				)
 		){
-			if(
-					(
-							typeof
-							optionData
-						==	"object"
-					)
-
-				&&	(
-							(
-											optionData
-								instanceof	Option
-							)
-						===	true
-					)
-			){
-				Object
-				.defineProperty(
-					this,
-
-					"$optionData",
-
-					{
-						"value": (
-							(
-								new WeakMap( )
-							)
-							.set(
-								this,
-
-								(
-									Object
-									.assign(
-										{ },
-
-										(
-											optionData
-											.$optionData
-										)
-									)
-								)
-							)
-						),
-
-						"configurable": false,
-						"enumerable": false,
-						"writable": false
-					}
-				);
-			}
-			else if(
-					(
-							typeof
-							optionData
-						==	"object"
-					)
-			){
-				Object
-				.defineProperty(
-					this,
-
-					"$optionData",
-
-					{
-						"value": (
-							(
-								new WeakMap( )
-							)
-							.set(
-								this,
-
-								(
-									Object
-									.assign(
-										{ },
-
-										optionData
-									)
-								)
-							)
-						),
-
-						"configurable": false,
-						"enumerable": false,
-						"writable": false
-					}
-				);
-			}
-			else if(
-					(
-							typeof
-							optionData
-						!=	"undefined"
-					)
-			){
-				Object
-				.defineProperty(
-					this,
-
-					"$optionData",
-
-					{
-						"value": (
-							(
-								new WeakMap( )
-							)
-							.set(
-								this,
-
-								[ optionData ]
-							)
-						),
-
-						"configurable": false,
-						"enumerable": false,
-						"writable": false
-					}
-				);
-			}
-			else{
-				Object
-				.defineProperty(
-					this,
-
-					"$optionData",
-
-					{
-						"value": (
-							(
-								new WeakMap( )
-							)
-							.set(
-								this,
-
-								{ }
-							)
-						),
-
-						"configurable": false,
-						"enumerable": false,
-						"writable": false
-					}
-				);
-			}
-
-			return	this;
-		}
-		else{
-			return	(
-						new	Option(
-								optionData
-							)
-					);
-		}
-	}
-);
-
-Object
-.defineProperty(
-	Option,
-
-	"namespace",
-
-	{
-		"value": "Option",
-
-		"configurable": false,
-		"enumerable": true,
-		"writable": false
-	}
-);
-
-Object
-.defineProperty(
-	Option,
-
-	"type",
-
-	{
-		"value": (
-			Object
-			.freeze(
 				[
-					"class",
-					"object",
-					"option"
+					optionData,
+					providerList
 				]
-			)
-		),
+			=	(
+					resolveParameterList
+					.apply(
+						(
+							this
+						),
 
-		"configurable": false,
-		"enumerable": true,
-		"writable": false
-	}
-);
+						(
+							Array
+							.from(
+								(
+									arguments
+								)
+							)
+						)
+					)
+				);
 
-Object
-.defineProperty(
-	Option,
+			this[ INTERNAL_OPTION ] = (
+				{ }
+			);
 
-	"checkOption",
+			providerList
+			.forEach(
+				(
+					( provider ) => {
+						this
+						.push(
+							(
+								provider
+							)
+						);
+					}
+				)
+			);
 
-	{
-		"value": (
-			function checkOption( entity ){
-				/*;
-					@parameter-definition:
-						{
-							"entity": "
-								[
-									@type:
-											boolean
-										|	function
-										|	object
-										|	number
-										|	string
-										|	symbol
-										|	undefined
-									@end-type
+			for(
+				let property in optionData
+			){
+				let value = (
+					optionData[ property ]
+				);
 
-									<@required;>
-								]
-							"
-						}
-					@end-parameter-definition
+					this[ INTERNAL_OPTION ][ property ]
+				=	(
+						value
+					);
 
-					@result-definition:
-						{
-							"result": "
-								[
-									@type:
-											boolean
-									@end-type
-								]
-							"
-						}
-					@end-result-definition
-				*/
+				this
+				.push(
+					function( option ){
+							this[ INTERNAL_OPTION ][ property ]
+						=	(
+								undefined
+							);
 
-				return	(
+						if(
 								(
 										typeof
-										entity
+										option
 									==	"object"
 								)
 
 							&&	(
-										(
-												(
-																entity
-													instanceof	Option
-												)
-											===	true
-										)
-
-									||	(
-												(
-														typeof
-														(
-															(
-																entity
-																.constructor
-															)
-															.namespace
-														)
-													==	"string"
-												)
-
-											&&	(
-														(
-															(
-																entity
-																.constructor
-																.namespace
-															)
-															.length
-														)
-													>	0
-												)
-
-											&&	(
-														(
-															(
-																entity
-																.constructor
-															)
-															.namespace
-														)
-													===	(
-															Option
-															.namespace
-														)
-												)
-										)
-
-									||	(
-												(
-														typeof
-														(
-															entity
-															.$type
-														)
-													==	"object"
-												)
-
-											&&	(
-														entity
-														.$type
-													!==	null
-												)
-
-											&&	(
-														Array
-														.isArray(
-															entity
-															.$type
-														)
-													===	true
-												)
-
-											&&	(
-														(
-															(
-																Option
-																.type
-															)
-															.every(
-																( type ) => (
-																	(
-																		entity
-																		.$type
-																	)
-																	.includes(
-																		type
-																	)
-																)
-															)
-														)
-													===	true
-												)
-										)
+										option
+									!==	null
 								)
-						);
-			}
-		),
+						){
+								option[ property ]
+							=	(
+									value
+								);
+						}
 
-		"configurable": false,
-		"enumerable": false,
-		"writable": false
-	}
-);
-
-Option.prototype.set = (
-	function set( property, value, scopeData ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"property": "
-						[
-							@type:
-									number
-								|	string
-								|	symbol
-							@end-type
-
-							<@required;>
-						]
-					",
-					"value": "
-						[
-							@type:
-									boolean
-								|	function
-								|	object
-								|	number
-								|	string
-								|	symbol
-								|	undefined
-							@end-type
-
-							<@required;>
-						]
-					",
-					"scopeData": "
-						[
-							@type:
-									object
-							@end-type
-
-							<@optional;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@trigger-definition:
-				{
-					"trigger": "
-						[
-							@type:
-									object as Error
-							@end-type
-
-							<@tag: invalid-set-option-scope-data;>
-							<@tag: invalid-set-option-property;>
-						]
-					"
-				}
-			@end-trigger-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object as Option
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		if(
-				(
-						typeof
-						scopeData
-					==	"object"
-				)
-
-			&&	(
-						scopeData
-					!==	null
-				)
-		){
-			this
-			.setScope(
-				scopeData
-			);
-		}
-
-		if(
-				(
-						typeof
-						property
-					==	"string"
-				)
-
-			||	(
-						typeof
-						property
-					==	"number"
-				)
-
-			||	(
-						typeof
-						property
-					==	"symbol"
-				)
-		){
-				this
-				.getScope( )[
-					property
-				]
-			=	value;
-		}
-		else{
-			throw	(
-						new	Error(
-								[
-									"#invalid-set-option-property;",
-
-									"cannot set option property",
-									"invalid property",
-
-									`@property: ${ property }`
-								]
-							)
-					);
-		}
-
-		if(
-				(
-						property
-					in	this
-				)
-			===	true
-		){
-			return	this;
-		}
-
-		Object
-		.defineProperty(
-			this,
-
-			property,
-
-			{
-				"configurable": false,
-				"enumerable": false,
-
-				"get": (
-					function get( ){
 						return	(
 									this
-									.getScope( )[
-										property
-									]
 								);
 					}
-				)
+				);
 			}
-		);
 
-		return	this;
-	}
-);
+			return	this;
+		}
+		else{
+				[
+					optionData,
+					providerList
+				]
+			=	(
+					resolveParameterList
+					.apply(
+						(
+							null
+						),
 
-Option.prototype.setOption = (
-	function setOption( property, value ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"property": "
-						[
-							@type:
-									number
-								|	string
-								|	symbol
-							@end-type
-
-							<@required;>
-						]
-					",
-
-					"value": "
-						[
-							@type:
-									boolean
-								|	function
-								|	object
-								|	number
-								|	string
-								|	symbol
-								|	undefined
-							@end-type
-
-							<@required;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@trigger-definition:
-				{
-					"trigger": "
-						[
-							@type:
-									object as Error
-							@end-type
-
-							<@tag: invalid-set-option-scope-data;>
-							<@tag: invalid-set-option-property;>
-						]
-					"
-				}
-			@end-trigger-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object as Option
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		return	(
-					this
-					.set(
-						property,
-						value
+						(
+							Array
+							.from(
+								(
+									arguments
+								)
+							)
+						)
 					)
 				);
-	}
-);
 
-Option.prototype.getOption = (
-	function getOption( property ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"property": "
-						[
-							@type:
-									number
-								|	string
-								|	symbol
-							@end-type
-
-							<@required;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									string
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		return	this[ property ];
-	}
-);
-
-Option.prototype.checkOption = (
-	function checkOption( optionQuery ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"optionQuery": "
-						[
-							@type:
-							@end-type
-
-							<@optional;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									boolean
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		if(
-				(
-						typeof
-						optionQuery
-					==	"undefined"
-				)
-
-			||	(
-						arguments
-						.length
-					<=	0
-				)
-		){
 			return	(
+						Option
+						.createProxyOption(
 							(
-									(
-										Object
-										.keys(
-											(
-												this
-												.getScope( )
-											)
-											.$optionData
+								new	Option(
+										(
+											optionData
+										),
+
+										(
+											providerList
 										)
 									)
-									.length
-								>	0
 							)
-					);
-		}
-		else{
-			return	(
-							(
-									(
-											optionQuery
-										in	this
-									)
-								===	true
-							)
-
-						||	(
-									typeof
-									this[ optionQuery ]
-								!=	"undefined"
-							)
+						)
 					);
 		}
 	}
 );
 
-Option.prototype.setScope = (
-	function setScope( scopeData ){
-		/*;
-			@procedure-definition:
-				Set option data container scope.
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"scopeData": "
-						[
-							@type:
-									object
-							@end-type
-
-							<@required;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@trigger-definition:
-				{
-					"trigger": "
-						[
-							@type:
-									object as Error
-							@end-type
-
-							<@tag: invalid-set-option-scope-data;>
-						]
-					"
-				}
-			@end-trigger-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object as Option
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		if(
-				(
-						typeof
-						scopeData
-					==	"object"
-				)
-
-			&&	(
-						scopeData
-					!==	null
-				)
-		){
-			(
-				this
-				.$optionData
-			)
-			.set(
-				this,
-				scopeData
-			);
-		}
-		else{
-			throw	(
-						new	Error(
-								[
-									"#invalid-set-option-scope-data;",
-
-									"cannot set option scope data",
-									"invalid scope data",
-
-									`@scope-data: ${ scopeData }`
-								]
-							)
-					);
-		}
-
-		return	this;
-	}
-);
-
-Option.prototype.getScope = (
-	function getScope( ){
-		/*;
-			@procedure-definition:
-				Get option data container scope.
-			@end-procedure-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
+Option.createProxyOption = (
+	function createProxyOption( optionInstance ){
 		return	(
-					(
-						this
-						.$optionData
-					)
-					.get(
-						this
-					)
-				);
-	}
-);
+					Proxy
+					.revocable(
+						(
+							optionInstance
+						),
 
-Option.prototype.valueOf = (
-	function valueOf( ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
+						(
+							{
+								"get": (
+									function get( entity, property ){
+										if(
+													(
+															typeof
+															entity[ property ]
+														==	"function"
+													)
+										){
+											return	(
+														entity[ property ]
+														.bind( entity )
+													);
+										}
 
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
+										return	(
+													entity[ INTERNAL_OPTION ][ property ]
+												);
+									}
+								),
 
-		return	(
-					Object
-					.freeze(
-						Object
-						.assign(
-							{ },
+								"set": (
+									function set( entity, property, value ){
+											entity[ INTERNAL_OPTION ][ property ]
+										=	(
+												value
+											);
 
-							(
-								this
-								.getScope( )
-							)
+										entity
+										.push(
+											function( option ){
+													entity[ INTERNAL_OPTION ][ property ]
+												=	(
+														undefined
+													);
+
+												if(
+														(
+																typeof
+																option
+															==	"object"
+														)
+
+													&&	(
+																option
+															!==	null
+														)
+												){
+														option[ property ]
+													=	(
+															value
+														);
+												}
+
+												return	(
+															this
+														);
+											}
+										);
+
+										return	(
+													true
+												);
+									}
+								)
+							}
 						)
 					)
 				);
 	}
 );
 
-Option.prototype.toString = (
-	function toString( ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									string
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		if(
+const OptionPrototype = (
+		Option
+		.prototype
+	=	(
+			Object
+			.create(
 				(
-						typeof
-						require
-					==	"function"
+					Array
+					.prototype
 				)
-		){
-			const util = require( "util" );
+			)
+		)
+);
 
-			if(
-					(
-							typeof
-							(
-								util
-								.inspect
+OptionPrototype.flush = (
+	function flush( option ){
+		return	(
+					this
+					.filter(
+						(
+							( provider ) => (
+									(
+											typeof
+											provider
+										==	"function"
+									)
+
+								&&	(
+											(
+													typeof
+													provider
+													.name
+												!=	"string"
+											)
+
+										||	(
+													provider
+													.name
+													.length
+												<=	0
+											)
+									)
 							)
-						==	"function"
+						)
 					)
-			){
-				return	(
-							util
-							.inspect(
-								this
-								.getScope( )
+					.reduce(
+						(
+							( entity, provider ) => (
+								provider
+								.bind(
+									(
+										entity
+									)
+								)(
+									(
+										option
+									)
+								)
 							)
-						);
-			}
-		}
+						),
 
+						(
+							this
+						)
+					)
+				);
+	}
+);
+
+OptionPrototype.valueOf = (
+	function valueOf( ){
+		return	(
+					Object
+					.assign(
+						(
+							{ }
+						),
+
+						(
+							this[ INTERNAL_OPTION ]
+						)
+					)
+				);
+	}
+);
+
+OptionPrototype.toJSON = (
+	function toJSON( ){
+		return	(
+					this
+					.valueOf( )
+				);
+	}
+);
+
+OptionPrototype.toString = (
+	function toString( ){
 		return	(
 					JSON
 					.stringify(
-						this
-						.getScope( )
+						(
+							this
+							.toJSON( )
+						)
 					)
 				);
 	}

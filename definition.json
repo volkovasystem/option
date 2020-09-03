@@ -1,0 +1,84 @@
+{
+	"module": {
+		"title": "",
+		"description": [
+
+		],
+		"namespace": "",
+		"alias": "",
+		"property": [
+
+		],
+		"type": [
+
+		],
+
+		"parameter": [
+			{
+				"title": "",
+				"description": [
+
+				],
+				"namespace": "",
+				"alias": "",
+				"property": [
+
+				],
+				"type": [
+
+				],
+			}
+		],
+
+		"result": [
+			{
+				"title": "",
+				"description": [
+
+				],
+				"namespace": "",
+				"alias": "",
+				"property": [
+
+				],
+				"type": [
+
+				],
+			}
+		],
+
+		"trigger": [
+			{
+				"title": "",
+				"description": [
+
+				],
+				"namespace": "",
+				"alias": "",
+				"property": [
+
+				],
+				"type": [
+
+				],
+			}
+		],
+
+		"procedure": [
+			{
+				"title": "",
+				"description": [
+
+				],
+				"namespace": "",
+				"alias": "",
+				"property": [
+
+				],
+				"type": [
+
+				],
+			}
+		]
+	}
+}

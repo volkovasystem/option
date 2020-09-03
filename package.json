@@ -1,35 +1,31 @@
 {
-  "name": "@volkovasystem/option",
-  "version": "0.0.3",
-  "description": "Option class interface for procedure parameter.",
-  "main": "option.js",
-  "scripts": {
-    "test": "node ./option.test.js",
-    "clean": "rm -Rfv ./node_modules && rm ./option.js",
-    "compress": "npx terser ./option.module.js --compress --comments all --output ./option.js",
-    "modularize": "npx babel --plugins @babel/plugin-transform-modules-umd ./option.js --out-file ./option.js",
-    "minify": "npx terser ./option.js --compress --comments all --output ./option.js",
-    "build": "npm run compress && npm run modularize && npm run minify",
-    "deploy": "npm run clean && npm install && npm run build && npm test",
-    "prepublishOnly": "npm run clean && npm install && npm run build && npm test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/volkovasystem/option.git"
-  },
-  "keywords": [
-    "option",
-    "parameter"
-  ],
-  "author": "Richeve S. Bebedor <richeve.bebedor@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/volkovasystem/option/issues"
-  },
-  "homepage": "https://github.com/volkovasystem/option#readme",
-  "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-transform-modules-umd": "^7.9.0"
-  }
+	"name": "@volkovasystem/option",
+	"alias": "option",
+	"version": "0.0.3",
+	"description": "Option class interface for procedure parameter.",
+	"main": "option.js",
+	"scripts": {
+		"clean": "rm -rfv ./node_modules || true && rm -fv ./package-lock.json || true && npm cache clean --force",
+		"reset": "npm run clean && rm -rfv ./option.js || true && rm -rfv ./.build || true",
+		"bundle": "npx parcel build ./*.module.js --no-cache --no-source-maps --no-minify --out-dir ./.build --out-file ./option.js --global Option && mv ./.build/option.js ./option.js && rm -rfv ./.build || true",
+		"compress": "npx terser ./option.js --compress --output ./option.js",
+		"build": "npm run bundle && npm run compress",
+		"test": "node ./option.test.js",
+		"stage": "npm run reset && npm install && npm run build && npm test && npm run clean",
+		"prepublishOnly": "npm run stage"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/volkovasystem/option.git"
+	},
+	"keywords": [
+		"option",
+		"parameter"
+	],
+	"author": "Richeve S. Bebedor <richeve.bebedor@gmail.com>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/volkovasystem/option/issues"
+	},
+	"homepage": "https://github.com/volkovasystem/option#readme"
 }
