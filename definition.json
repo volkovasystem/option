@@ -1,84 +1,204 @@
 {
-	"module": {
-		"title": "",
-		"description": [
+	"module": [
+		{
+			"title": "Option",
+			"description": [
+				"Option class interface for procedure parameter."
+			],
+			"namespace": "option",
+			"property": [
+				"Option"
+			],
+			"type": [
+				"class"
+			],
+			"format": [
+				"Option( optionData );"
+			],
+			"sample": [
+				"const { option, revokeOption } = Option( optionData );"
+			],
 
-		],
-		"namespace": "",
-		"alias": "",
-		"property": [
+			"parameter": [
+				{
+					"title": "Option Data",
+					"description": [
 
-		],
-		"type": [
+					],
+					"namespace": "option-data",
+					"property": [
+						"optionData"
+					],
+					"type": [
+						"object",
+						"object:as:Option"
+					],
+					"format": [
 
-		],
+					],
+					"sample": [
 
-		"parameter": [
-			{
-				"title": "",
-				"description": [
+					]
+				},
 
-				],
-				"namespace": "",
-				"alias": "",
-				"property": [
+				{
+					"title": "Provider List",
+					"description": [
 
-				],
-				"type": [
+					],
+					"namespace": "provider-list",
+					"property": [
+						"providerList"
+					],
+					"type": [
+						"object:as:Array:of:function"
+					],
+					"format": [
 
-				],
-			}
-		],
+					],
+					"sample": [
 
-		"result": [
-			{
-				"title": "",
-				"description": [
+					]
+				}
+			],
 
-				],
-				"namespace": "",
-				"alias": "",
-				"property": [
+			"result": [
+				{
+					"title": "Result",
+					"description": [
 
-				],
-				"type": [
+					],
+					"namespace": "result",
+					"alias": "result",
+					"property": [
+						"result"
+					],
+					"type": [
+						"object:as:Option"
+					],
+					"format": [
 
-				],
-			}
-		],
+					],
+					"sample": [
 
-		"trigger": [
-			{
-				"title": "",
-				"description": [
+					]
+				}
+			],
 
-				],
-				"namespace": "",
-				"alias": "",
-				"property": [
+			"trigger": [
+				{
+					"title": "trigger",
+					"description": [
 
-				],
-				"type": [
+					],
+					"namespace": "trigger",
+					"alias": "trigger",
+					"property": [
+						"trigger"
+					],
+					"type": [
+						"object:as:Error"
+					],
+					"format": [
 
-				],
-			}
-		],
+					],
+					"sample": [
 
-		"procedure": [
-			{
-				"title": "",
-				"description": [
+					]
+				}
+			],
 
-				],
-				"namespace": "",
-				"alias": "",
-				"property": [
+			"procedure": [
+				{
+					"title": "",
+					"description": [
 
-				],
-				"type": [
+					],
+					"namespace": "",
+					"alias": "",
+					"property": [
 
-				],
-			}
-		]
-	}
+					],
+					"type": [
+
+					],
+					"format": [
+
+					],
+					"sample": [
+
+					],
+
+					"parameter": [
+						{
+							"title": "",
+							"description": [
+
+							],
+							"namespace": "",
+							"alias": "",
+							"property": [
+
+							],
+							"type": [
+
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					],
+
+					"result": [
+						{
+							"title": "Result",
+							"description": [
+
+							],
+							"namespace": "result",
+							"alias": "result",
+							"property": [
+								"result"
+							],
+							"type": [
+								"object:as:Option"
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					],
+
+					"trigger": [
+						{
+							"title": "trigger",
+							"description": [
+
+							],
+							"namespace": "trigger",
+							"alias": "trigger",
+							"property": [
+								"trigger"
+							],
+							"type": [
+								"object:as:Error"
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					]
+				}
+			]
+		}
+	]
 }

@@ -1,19 +1,18 @@
 "use strict";
 
 /*;
-	@license;
-	@start:license:module:
+	@license:module:
 		MIT License
 
 		Copyright (c) 2020-present Richeve S. Bebedor <richeve.bebedor@gmail.com>
 
-		@start:license:copyright:
+		@license:copyright:
 			Richeve S. Bebedor
 
 			<@license:year-range:2020-present;>
 
 			<@license:contact-detail:richeve.bebedor@gmail.com;>
-		@end:license:copyright;
+		@license:copyright;
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -32,11 +31,11 @@
 		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		SOFTWARE.
-	@end:license:module;
+	@license:module;
 */
 
-const INTERNAL_OPTION = (
-	Symbol( "internal-option" )
+const CONTEXT = (
+	Symbol( "context" )
 );
 
 const Option = (
@@ -45,6 +44,7 @@ const Option = (
 			@definition:
 				@class:#Option
 					@description:
+						Option class interface for procedure parameter.
 					@description;
 				@class;
 
@@ -56,6 +56,19 @@ const Option = (
 
 					@description:
 					@description;
+
+					@optional;
+				@parameter;
+
+				@parameter:#providerList
+					@type:
+							object:as:Array:of:function
+					@type;
+
+					@description:
+					@description;
+
+					@optional;
 				@parameter;
 
 				@result:#result
@@ -92,32 +105,71 @@ const Option = (
 				);
 
 				const optionCache = (
-					parameterList
-					.find(
-						(
-							( parameter ) => (
+					Object
+					.assign(
+						...	(
+								parameterList
+								.filter(
 									(
-											typeof
-											parameter
-										==	"object"
-									)
-
-								&&	(
-											parameter
-										!==	null
-									)
-
-								&&	(
-											Array
-											.isArray(
+										( parameter ) => (
 												(
-													parameter
+														typeof
+														parameter
+													==	"object"
 												)
-											)
-										!==	true
+
+											&&	(
+														parameter
+													!==	null
+												)
+
+											&&	(
+														Array
+														.isArray(
+															(
+																parameter
+															)
+														)
+													!==	true
+												)
+										)
 									)
+								)
+								.concat(
+									(
+										[
+											{ }
+										]
+									)
+								)
+								.map(
+									( data ) => (
+											(
+													(
+															(
+																			data
+																instanceof	Option
+															)
+														===	true
+													)
+
+												&&	(
+															typeof
+															data
+															.context
+														==	"function"
+													)
+											)
+										?	(
+												data
+												.context( )
+											)
+										:	(
+												data
+											)
+									)
+								)
 							)
-						)
 					)
 				);
 
@@ -204,31 +256,57 @@ const Option = (
 					===	true
 				)
 		){
-				[
-					optionData,
-					providerList
-				]
-			=	(
-					resolveParameterList
-					.apply(
-						(
-							this
-						),
+			(
+					[
+						optionData,
+						providerList
+					]
+				=	(
+						resolveParameterList
+						.apply(
+							(
+								this
+							),
 
-						(
-							Array
-							.from(
-								(
-									arguments
+							(
+								Array
+								.from(
+									(
+										arguments
+									)
 								)
 							)
 						)
 					)
-				);
-
-			this[ INTERNAL_OPTION ] = (
-				{ }
 			);
+
+			if(
+					(
+							typeof
+							optionData
+						==	"object"
+					)
+
+				&&	(
+							optionData
+						!==	null
+					)
+			){
+				(
+						this[ CONTEXT ]
+					=	(
+							optionData
+						)
+				);
+			}
+			else{
+				(
+						this[ CONTEXT ]
+					=	(
+							{ }
+						)
+				);
+			}
 
 			providerList
 			.forEach(
@@ -245,42 +323,46 @@ const Option = (
 			);
 
 			for(
-				let property in optionData
+				let	property
+				in	optionData
 			){
 				let value = (
 					optionData[ property ]
 				);
 
-					this[ INTERNAL_OPTION ][ property ]
-				=	(
-						value
-					);
+				const self = (
+					this
+				);
 
 				this
 				.push(
-					function( option ){
-							this[ INTERNAL_OPTION ][ property ]
-						=	(
-								undefined
-							);
-
+					function flush( optionData ){
 						if(
 								(
 										typeof
-										option
+										optionData
 									==	"object"
 								)
 
 							&&	(
-										option
+										optionData
 									!==	null
 								)
 						){
-								option[ property ]
-							=	(
-									value
-								);
+							(
+									optionData[ property ]
+								=	(
+										self[ CONTEXT ][ property ]
+									)
+							);
 						}
+
+						(
+								self[ CONTEXT ][ property ]
+							=	(
+									undefined
+								)
+						);
 
 						return	(
 									this
@@ -289,30 +371,34 @@ const Option = (
 				);
 			}
 
-			return	this;
+			return	(
+						this
+					);
 		}
 		else{
-				[
-					optionData,
-					providerList
-				]
-			=	(
-					resolveParameterList
-					.apply(
-						(
-							null
-						),
+			(
+					[
+						optionData,
+						providerList
+					]
+				=	(
+						resolveParameterList
+						.apply(
+							(
+								null
+							),
 
-						(
-							Array
-							.from(
-								(
-									arguments
+							(
+								Array
+								.from(
+									(
+										arguments
+									)
 								)
 							)
 						)
 					)
-				);
+			);
 
 			return	(
 						Option
@@ -336,7 +422,11 @@ const Option = (
 
 Option.createProxyOption = (
 	function createProxyOption( optionInstance ){
-		return	(
+		const	{
+					proxy: option,
+					revoke: revokeOption
+				}
+			=	(
 					Proxy
 					.revocable(
 						(
@@ -346,7 +436,67 @@ Option.createProxyOption = (
 						(
 							{
 								"get": (
-									function get( entity, property ){
+									function get( entity, property, proxy ){
+										if(
+												(
+														Array
+														.prototype
+														.hasOwnProperty(
+															(
+																property
+															)
+														)
+													===	true
+												)
+
+											||	(
+														Object
+														.prototype
+														.hasOwnProperty(
+															(
+																property
+															)
+														)
+													===	true
+												)
+
+											||	(
+														typeof
+														property
+													==	"symbol"
+												)
+										){
+											if(
+													(
+															typeof
+															Array
+															.prototype[ property ]
+														==	"function"
+													)
+
+												||	(
+															typeof
+															Object
+															.prototype[ property ]
+														==	"function"
+													)
+											){
+												return	(
+															entity[ property ]
+															.bind(
+																(
+																	entity
+																)
+															)
+														);
+											}
+											else{
+												return	(
+															entity[ property ]
+														);
+											}
+										}
+
 										if(
 													(
 															typeof
@@ -356,48 +506,214 @@ Option.createProxyOption = (
 										){
 											return	(
 														entity[ property ]
-														.bind( entity )
+														.bind(
+															(
+																proxy
+															)
+														)
 													);
 										}
 
+										(
+												entity[ CONTEXT ][ property ]
+											=	(
+													entity
+													.reduce(
+														(
+															( value, provider, index ) => (
+																	(
+																			(
+																					typeof
+																					provider
+																				==	"function"
+																			)
+
+																		&&	(
+																					provider
+																					.name
+																					.indexOf(
+																						(
+																							"resolve"
+																						)
+																					)
+																				===	0
+																			)
+																	)
+																?	(
+																		entity
+																		.splice(
+																			(
+																				index
+																			),
+
+																			(
+																				1
+																			)
+																		)
+																		[ 0 ](
+																			(
+																				property
+																			),
+
+																			(
+																				value
+																			)
+																		)
+																	)
+																:	(
+																		value
+																	)
+															)
+														),
+
+														(
+															entity[ CONTEXT ][ property ]
+														)
+													)
+												)
+										);
+
+										const value = (
+											entity
+											.reduce(
+												(
+													( value, provider, index ) => (
+															(
+																	(
+																			typeof
+																			provider
+																		==	"function"
+																	)
+
+																&&	(
+																			provider
+																			.name
+																			.indexOf(
+																				(
+																					"format"
+																				)
+																			)
+																		===	0
+																	)
+															)
+														?	(
+																entity
+																.splice(
+																	(
+																		index
+																	),
+
+																	(
+																		1
+																	)
+																)
+																[ 0 ](
+																	(
+																		property
+																	),
+
+																	(
+																		value
+																	)
+																)
+															)
+														:	(
+																value
+															)
+													)
+												),
+
+												(
+													entity[ CONTEXT ][ property ]
+												)
+											)
+										);
+
 										return	(
-													entity[ INTERNAL_OPTION ][ property ]
+													value
 												);
 									}
 								),
 
 								"set": (
 									function set( entity, property, value ){
-											entity[ INTERNAL_OPTION ][ property ]
-										=	(
-												value
+										if(
+												(
+														Array
+														.prototype
+														.hasOwnProperty(
+															(
+																property
+															)
+														)
+													===	true
+												)
+
+											||	(
+														Object
+														.prototype
+														.hasOwnProperty(
+															(
+																property
+															)
+														)
+													===	true
+												)
+
+											||	(
+														typeof
+														property
+													==	"symbol"
+												)
+										){
+											(
+													entity[ property ]
+												=	(
+														value
+													)
 											);
+
+											return	(
+														true
+													);
+										}
+
+										(
+												entity[ CONTEXT ][ property ]
+											=	(
+													value
+												)
+										);
 
 										entity
 										.push(
-											function( option ){
-													entity[ INTERNAL_OPTION ][ property ]
-												=	(
-														undefined
-													);
-
+											function flush( optionData ){
 												if(
 														(
 																typeof
-																option
+																optionData
 															==	"object"
 														)
 
 													&&	(
-																option
+																optionData
 															!==	null
 														)
 												){
-														option[ property ]
-													=	(
-															value
-														);
+													(
+															optionData[ property ]
+														=	(
+																entity[ CONTEXT ][ property ]
+															)
+													);
 												}
+
+												(
+														entity[ CONTEXT ][ property ]
+													=	(
+															undefined
+														)
+												);
 
 												return	(
 															this
@@ -413,6 +729,13 @@ Option.createProxyOption = (
 							}
 						)
 					)
+				);
+
+		return	(
+					{
+						"option": option,
+						"revokeOption": revokeOption
+					}
 				);
 	}
 );
@@ -431,50 +754,146 @@ const OptionPrototype = (
 		)
 );
 
-OptionPrototype.flush = (
-	function flush( option ){
+OptionPrototype.context = (
+	function context( ){
 		return	(
-					this
-					.filter(
-						(
-							( provider ) => (
-									(
-											typeof
-											provider
-										==	"function"
-									)
+					this[ CONTEXT ]
+				);
+	}
+);
 
-								&&	(
-											(
-													typeof
-													provider
-													.name
-												!=	"string"
-											)
-
-										||	(
-													provider
-													.name
-													.length
-												<=	0
-											)
-									)
+OptionPrototype.format = (
+	function format( formatProcedure ){
+		if(
+				(
+						formatProcedure
+						.name
+						.includes(
+							(
+								"format"
 							)
 						)
-					)
+					!==	true
+				)
+		){
+			this
+			.push(
+				function format( property, value ){
+					return	(
+								formatProcedure(
+									(
+										property
+									),
+
+									(
+										value
+									)
+								)
+							);
+				}
+			);
+		}
+		else{
+			this
+			.push(
+				(
+					formatProcedure
+				)
+			);
+		}
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.resolve = (
+	function resolve( resolveProcedure ){
+		if(
+				(
+						resolveProcedure
+						.name
+						.includes(
+							(
+								"resolve"
+							)
+						)
+					!==	true
+				)
+		){
+			this
+			.push(
+				function resolve( property, value ){
+					return	(
+								resolveProcedure(
+									(
+										property
+									),
+
+									(
+										value
+									)
+								)
+							);
+				}
+			);
+		}
+		else{
+			this
+			.push(
+				(
+					resolveProcedure
+				)
+			);
+		}
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.flush = (
+	function flush( optionData ){
+		return	(
+					this
 					.reduce(
 						(
 							( entity, provider ) => (
-								provider
-								.bind(
 									(
+											(
+													typeof
+													provider
+												==	"function"
+											)
+
+										&&	(
+													provider
+													.name
+													.indexOf(
+														(
+															"flush"
+														)
+													)
+												===	0
+											)
+									)
+								?	(
+										provider
+										.bind(
+											(
+												entity
+											)
+										)(
+											(
+												optionData
+											)
+										)
+									)
+								:	(
 										entity
 									)
-								)(
-									(
-										option
-									)
-								)
 							)
 						),
 
@@ -496,7 +915,7 @@ OptionPrototype.valueOf = (
 						),
 
 						(
-							this[ INTERNAL_OPTION ]
+							this[ CONTEXT ]
 						)
 					)
 				);
