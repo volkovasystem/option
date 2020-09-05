@@ -23,7 +23,7 @@
 				{
 					"title": "Option Data",
 					"description": [
-
+						"Data parameter context."
 					],
 					"namespace": "option-data",
 					"property": [
@@ -34,17 +34,18 @@
 						"object:as:Option"
 					],
 					"format": [
-
+						"Option( optionData );",
+						"Option( Option( optionData ).option );"
 					],
 					"sample": [
-
+						"const { option, revokeOption } = Option( { 'hello': 'world' } );"
 					]
 				},
 
 				{
 					"title": "Provider List",
 					"description": [
-
+						"Data transformation context."
 					],
 					"namespace": "provider-list",
 					"property": [
@@ -109,6 +110,276 @@
 			],
 
 			"procedure": [
+				{
+					"title": "",
+					"description": [
+
+					],
+					"namespace": "",
+					"alias": "",
+					"property": [
+
+					],
+					"type": [
+
+					],
+					"format": [
+
+					],
+					"sample": [
+
+					],
+
+					"parameter": [
+						{
+							"title": "",
+							"description": [
+
+							],
+							"namespace": "",
+							"alias": "",
+							"property": [
+
+							],
+							"type": [
+
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					],
+
+					"result": [
+						{
+							"title": "Result",
+							"description": [
+
+							],
+							"namespace": "result",
+							"alias": "result",
+							"property": [
+								"result"
+							],
+							"type": [
+								"object:as:Option"
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					],
+
+					"trigger": [
+						{
+							"title": "trigger",
+							"description": [
+
+							],
+							"namespace": "trigger",
+							"alias": "trigger",
+							"property": [
+								"trigger"
+							],
+							"type": [
+								"object:as:Error"
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					]
+				},
+
+				{
+					"title": "",
+					"description": [
+
+					],
+					"namespace": "",
+					"alias": "",
+					"property": [
+
+					],
+					"type": [
+
+					],
+					"format": [
+
+					],
+					"sample": [
+
+					],
+
+					"parameter": [
+						{
+							"title": "",
+							"description": [
+
+							],
+							"namespace": "",
+							"alias": "",
+							"property": [
+
+							],
+							"type": [
+
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					],
+
+					"result": [
+						{
+							"title": "Result",
+							"description": [
+
+							],
+							"namespace": "result",
+							"alias": "result",
+							"property": [
+								"result"
+							],
+							"type": [
+								"object:as:Option"
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					],
+
+					"trigger": [
+						{
+							"title": "trigger",
+							"description": [
+
+							],
+							"namespace": "trigger",
+							"alias": "trigger",
+							"property": [
+								"trigger"
+							],
+							"type": [
+								"object:as:Error"
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					]
+				},
+
+				{
+					"title": "",
+					"description": [
+
+					],
+					"namespace": "",
+					"alias": "",
+					"property": [
+
+					],
+					"type": [
+
+					],
+					"format": [
+
+					],
+					"sample": [
+
+					],
+
+					"parameter": [
+						{
+							"title": "",
+							"description": [
+
+							],
+							"namespace": "",
+							"alias": "",
+							"property": [
+
+							],
+							"type": [
+
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					],
+
+					"result": [
+						{
+							"title": "Result",
+							"description": [
+
+							],
+							"namespace": "result",
+							"alias": "result",
+							"property": [
+								"result"
+							],
+							"type": [
+								"object:as:Option"
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					],
+
+					"trigger": [
+						{
+							"title": "trigger",
+							"description": [
+
+							],
+							"namespace": "trigger",
+							"alias": "trigger",
+							"property": [
+								"trigger"
+							],
+							"type": [
+								"object:as:Error"
+							],
+							"format": [
+
+							],
+							"sample": [
+
+							]
+						}
+					]
+				},
+
 				{
 					"title": "",
 					"description": [

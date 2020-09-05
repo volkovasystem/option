@@ -531,12 +531,7 @@ Option.createProxyOption = (
 																		&&	(
 																					provider
 																					.name
-																					.indexOf(
-																						(
-																							"resolve"
-																						)
-																					)
-																				===	0
+																				===	"resolve"
 																			)
 																	)
 																?	(
@@ -588,12 +583,7 @@ Option.createProxyOption = (
 																&&	(
 																			provider
 																			.name
-																			.indexOf(
-																				(
-																					"format"
-																				)
-																			)
-																		===	0
+																		===	"format"
 																	)
 															)
 														?	(
@@ -762,20 +752,90 @@ OptionPrototype.context = (
 	}
 );
 
+OptionPrototype.check = (
+	function check( property ){
+		return	(
+						(
+								property
+							in	this[ CONTEXT ]
+						)
+					===	true
+				);
+	}
+);
+
 OptionPrototype.format = (
 	function format( formatProcedure ){
 		if(
 				(
+						typeof
 						formatProcedure
-						.name
-						.includes(
+					==	"string"
+				)
+
+			&&	(
+						formatProcedure
+						.length
+					>	0
+				)
+
+			&&	(
+						formatProcedure
+					!==	"format"
+				)
+
+			&&	(
+						formatProcedure
+						.indexOf(
 							(
 								"format"
 							)
 						)
-					!==	true
+					===	0
 				)
 		){
+			formatProcedure = (
+				this
+				.find(
+					( provider ) => (
+							(
+									typeof
+									provider
+								==	"function"
+							)
+
+						&&	(
+									provider
+									.name
+								===	formatProcedure
+							)
+					)
+				)
+			);
+
+			if(
+					(
+							typeof
+							formatProcedure
+						!=	"function"
+					)
+			){
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-find-format-procedure;",
+
+												"cannot find format procedure;",
+
+												"@format-procedure:",
+												`${ formatProcedure }`
+											]
+										)
+									)
+						);
+			}
+
 			this
 			.push(
 				function format( property, value ){
@@ -793,13 +853,94 @@ OptionPrototype.format = (
 				}
 			);
 		}
-		else{
-			this
-			.push(
+		else if(
 				(
-					formatProcedure
+						typeof
+						formatProcedure
+					==	"function"
 				)
-			);
+		){
+			if(
+					(
+							formatProcedure
+							.name
+						===	"format"
+					)
+
+				||	(
+							formatProcedure
+							.indexOf(
+								(
+									"format"
+								)
+							)
+						===	0
+					)
+			){
+				this
+				.push(
+					(
+						formatProcedure
+					)
+				);
+			}
+			else if(
+					(
+							formatProcedure
+							.name
+							.length
+						<=	0
+					)
+			){
+				this
+				.push(
+					function format( property, value ){
+						return	(
+									formatProcedure(
+										(
+											property
+										),
+
+										(
+											value
+										)
+									)
+								);
+					}
+				);
+			}
+			else{
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-determine-format-procedure;",
+
+												"cannot determine format procedure;",
+
+												"@format-procedure:",
+												`${ formatProcedure }`
+											]
+										)
+									)
+						);
+			}
+		}
+		else{
+			throw	(
+						new	Error(
+									(
+										[
+											"#cannot-provide-format-procedure;",
+
+											"cannot provide format procedure;",
+
+											"@format-procedure:",
+											`${ formatProcedure }`
+										]
+									)
+								)
+					);
 		}
 
 		return	(
@@ -812,16 +953,74 @@ OptionPrototype.resolve = (
 	function resolve( resolveProcedure ){
 		if(
 				(
+						typeof
 						resolveProcedure
-						.name
-						.includes(
+					==	"string"
+				)
+
+			&&	(
+						resolveProcedure
+						.length
+					>	0
+				)
+
+			&&	(
+						resolveProcedure
+					!==	"resolve"
+				)
+
+			&&	(
+						resolveProcedure
+						.indexOf(
 							(
 								"resolve"
 							)
 						)
-					!==	true
+					===	0
 				)
 		){
+			resolveProcedure = (
+				this
+				.find(
+					( provider ) => (
+							(
+									typeof
+									provider
+								==	"function"
+							)
+
+						&&	(
+									provider
+									.name
+								===	resolveProcedure
+							)
+					)
+				)
+			);
+
+			if(
+					(
+							typeof
+							resolveProcedure
+						!=	"function"
+					)
+			){
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-find-resolve-procedure;",
+
+												"cannot find resolve procedure;",
+
+												"@resolve-procedure:",
+												`${ resolveProcedure }`
+											]
+										)
+									)
+						);
+			}
+
 			this
 			.push(
 				function resolve( property, value ){
@@ -839,13 +1038,94 @@ OptionPrototype.resolve = (
 				}
 			);
 		}
-		else{
-			this
-			.push(
+		else if(
 				(
-					resolveProcedure
+						typeof
+						resolveProcedure
+					==	"function"
 				)
-			);
+		){
+			if(
+					(
+							resolveProcedure
+							.name
+						===	"resolve"
+					)
+
+				||	(
+							resolveProcedure
+							.indexOf(
+								(
+									"resolve"
+								)
+							)
+						===	0
+					)
+			){
+				this
+				.push(
+					(
+						resolveProcedure
+					)
+				);
+			}
+			else if(
+					(
+							resolveProcedure
+							.name
+							.length
+						<=	0
+					)
+			){
+				this
+				.push(
+					function resolve( property, value ){
+						return	(
+									resolveProcedure(
+										(
+											property
+										),
+
+										(
+											value
+										)
+									)
+								);
+					}
+				);
+			}
+			else{
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-determine-resolve-procedure;",
+
+												"cannot determine resolve procedure;",
+
+												"@resolve-procedure:",
+												`${ resolveProcedure }`
+											]
+										)
+									)
+						);
+			}
+		}
+		else{
+			throw	(
+						new	Error(
+									(
+										[
+											"#cannot-provide-resolve-procedure;",
+
+											"cannot provide resolve procedure;",
+
+											"@resolve-procedure:",
+											`${ resolveProcedure }`
+										]
+									)
+								)
+					);
 		}
 
 		return	(
@@ -871,12 +1151,7 @@ OptionPrototype.flush = (
 										&&	(
 													provider
 													.name
-													.indexOf(
-														(
-															"flush"
-														)
-													)
-												===	0
+												===	"flush"
 											)
 									)
 								?	(
