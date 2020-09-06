@@ -514,14 +514,13 @@ Option.createProxyOption = (
 													);
 										}
 
-										(
-												entity[ CONTEXT ][ property ]
-											=	(
-													entity
-													.reduce(
-														(
-															( value, provider, index ) => (
-																	(
+										try{
+											if(
+													(
+															entity
+															.some(
+																(
+																	( provider ) => (
 																			(
 																					typeof
 																					provider
@@ -531,97 +530,262 @@ Option.createProxyOption = (
 																		&&	(
 																					provider
 																					.name
-																				===	"resolve"
+																				===	"transform"
 																			)
-																	)
-																?	(
-																		entity
-																		.splice(
-																			(
-																				index
-																			),
 
-																			(
-																				1
+																		&&	(
+																					provider
+																					.property
+																				===	property
 																			)
-																		)
-																		[ 0 ](
-																			(
-																				property
-																			),
-
-																			(
-																				value
-																			)
-																		)
 																	)
-																:	(
-																		value
-																	)
+																)
 															)
+														===	true
+													)
+											){
+												const context = (
+													Object
+													.assign(
+														(
+															{ }
 														),
 
 														(
-															entity[ CONTEXT ][ property ]
+															entity[ CONTEXT ]
 														)
 													)
-												)
-										);
-
-										const value = (
-											entity
-											.reduce(
-												(
-													( value, provider, index ) => (
-															(
-																	(
-																			typeof
-																			provider
-																		==	"function"
-																	)
-
-																&&	(
-																			provider
-																			.name
-																		===	"format"
-																	)
-															)
-														?	(
-																entity
-																.splice(
-																	(
-																		index
-																	),
-
-																	(
-																		1
-																	)
-																)
-																[ 0 ](
-																	(
-																		property
-																	),
-
-																	(
-																		value
-																	)
-																)
-															)
-														:	(
-																value
-															)
-													)
-												),
-
-												(
-													entity[ CONTEXT ][ property ]
-												)
-											)
-										);
-
-										return	(
-													value
 												);
+
+												return	(
+															entity
+															.reduce(
+																(
+																	( value, provider ) => (
+																			(
+																					(
+																							typeof
+																							provider
+																						==	"function"
+																					)
+
+																				&&	(
+																							provider
+																							.name
+																						===	"transform"
+																					)
+
+																				&&	(
+																							provider
+																							.property
+																						===	property
+																					)
+																			)
+																		?	(
+																				provider(
+																					(
+																						value
+																					),
+
+																					(
+																						context
+																					)
+																				)
+																			)
+																		:	(
+																				value
+																			)
+																	)
+																),
+
+																(
+																	entity[ CONTEXT ][ property ]
+																)
+															)
+														);
+											}
+
+											(
+													entity[ CONTEXT ][ property ]
+												=	(
+														entity
+														.reduce(
+															(
+																( value, provider, index ) => (
+																		(
+																				(
+																						typeof
+																						provider
+																					==	"function"
+																				)
+
+																			&&	(
+																						provider
+																						.name
+																					===	"resolve"
+																				)
+																		)
+																	?	(
+																			provider(
+																				(
+																					property
+																				),
+
+																				(
+																					value
+																				)
+																			)
+																		)
+																	:	(
+																			value
+																		)
+																)
+															),
+
+															(
+																entity[ CONTEXT ][ property ]
+															)
+														)
+													)
+											);
+
+											const value = (
+												entity
+												.reduce(
+													(
+														( value, provider, index ) => (
+																(
+																		(
+																				typeof
+																				provider
+																			==	"function"
+																		)
+
+																	&&	(
+																				provider
+																				.name
+																			===	"format"
+																		)
+																)
+															?	(
+																	provider(
+																		(
+																			property
+																		),
+
+																		(
+																			value
+																		)
+																	)
+																)
+															:	(
+																	value
+																)
+														)
+													),
+
+													(
+														entity[ CONTEXT ][ property ]
+													)
+												)
+											);
+
+											return	(
+														value
+													);
+										}
+										catch( error ){
+											throw	(
+														new	Error(
+																	(
+																		[
+																			"#cannot-get-option-property;",
+
+																			"cannot get option property;",
+
+																			"@error-data:",
+																			`${ error };`
+																		]
+																	)
+																)
+													);
+										}
+										finally{
+											while(
+													(
+															entity
+															.some(
+																(
+																	( provider ) => (
+																			(
+																					typeof
+																					provider
+																				==	"function"
+																			)
+
+																		&&	(
+																					(
+																							provider
+																							.name
+																						===	"resolve"
+																					)
+
+																				||	(
+																							provider
+																							.name
+																						===	"format"
+																					)
+																			)
+																	)
+																)
+															)
+														===	true
+													)
+											){
+												entity
+												.forEach(
+													( provider ) => {
+														if(
+																(
+																		typeof
+																		provider
+																	==	"function"
+																)
+
+															&&	(
+																		(
+																				provider
+																				.name
+																			===	"resolve"
+																		)
+
+																	||	(
+																				provider
+																				.name
+																			===	"format"
+																		)
+																)
+														){
+															entity
+															.splice(
+																(
+																	entity
+																	.indexOf(
+																		(
+																			provider
+																		)
+																	)
+																),
+
+																(
+																	1
+																)
+															);
+														}
+													}
+												);
+											}
+										}
 									}
 								),
 
@@ -752,6 +916,36 @@ OptionPrototype.context = (
 	}
 );
 
+OptionPrototype.effect = (
+	function effect( ){
+		return	(
+					Object
+					.keys(
+						(
+							this[ CONTEXT ]
+						)
+					)
+					.reduce(
+						(
+							( effect, property ) => (
+								(
+										effect[ property ]
+									=	this[ property ]
+								),
+								(
+									effect
+								)
+							)
+						),
+
+						(
+							{ }
+						)
+					)
+				);
+	}
+);
+
 OptionPrototype.check = (
 	function check( property ){
 		return	(
@@ -829,7 +1023,7 @@ OptionPrototype.format = (
 												"cannot find format procedure;",
 
 												"@format-procedure:",
-												`${ formatProcedure }`
+												`${ formatProcedure };`
 											]
 										)
 									)
@@ -869,6 +1063,7 @@ OptionPrototype.format = (
 
 				||	(
 							formatProcedure
+							.name
 							.indexOf(
 								(
 									"format"
@@ -919,7 +1114,7 @@ OptionPrototype.format = (
 												"cannot determine format procedure;",
 
 												"@format-procedure:",
-												`${ formatProcedure }`
+												`${ formatProcedure };`
 											]
 										)
 									)
@@ -936,7 +1131,7 @@ OptionPrototype.format = (
 											"cannot provide format procedure;",
 
 											"@format-procedure:",
-											`${ formatProcedure }`
+											`${ formatProcedure };`
 										]
 									)
 								)
@@ -1014,7 +1209,7 @@ OptionPrototype.resolve = (
 												"cannot find resolve procedure;",
 
 												"@resolve-procedure:",
-												`${ resolveProcedure }`
+												`${ resolveProcedure };`
 											]
 										)
 									)
@@ -1054,6 +1249,7 @@ OptionPrototype.resolve = (
 
 				||	(
 							resolveProcedure
+							.name
 							.indexOf(
 								(
 									"resolve"
@@ -1104,7 +1300,7 @@ OptionPrototype.resolve = (
 												"cannot determine resolve procedure;",
 
 												"@resolve-procedure:",
-												`${ resolveProcedure }`
+												`${ resolveProcedure };`
 											]
 										)
 									)
@@ -1121,12 +1317,242 @@ OptionPrototype.resolve = (
 											"cannot provide resolve procedure;",
 
 											"@resolve-procedure:",
-											`${ resolveProcedure }`
+											`${ resolveProcedure };`
 										]
 									)
 								)
 					);
 		}
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.transform = (
+	function transform( property, flow ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
+
+		flow = (
+			parameterList
+			.slice(
+				(
+					0
+				)
+			)
+			.reduce(
+				(
+					( procedureList, parameter ) => {
+						if(
+								(
+										typeof
+										parameter
+									==	"function"
+								)
+						){
+							procedureList
+							.push(
+								(
+									parameter
+								)
+							);
+						}
+						else if(
+								(
+										typeof
+										parameter
+									==	"string"
+								)
+						){
+							procedureList
+							.push(
+								(
+									this
+									.find(
+										( provider ) => (
+												(
+														typeof
+														provider
+													==	"function"
+												)
+
+											&&	(
+														provider
+														.name
+													===	parameter
+												)
+										)
+									)
+								)
+							);
+						}
+						else if(
+								(
+										Array
+										.isArray(
+											(
+												parameter
+											)
+										)
+									===	true
+								)
+						){
+							parameter
+							.forEach(
+								(
+									( procedure ) => {
+										if(
+												(
+														typeof
+														procedure
+													==	"function"
+												)
+										){
+											procedureList
+											.push(
+												(
+													procedure
+												)
+											);
+										}
+										else if(
+												(
+														typeof
+														procedure
+													==	"string"
+												)
+										){
+											procedureList
+											.push(
+												(
+													this
+													.find(
+														( provider ) => (
+																(
+																		typeof
+																		provider
+																	==	"function"
+																)
+
+															&&	(
+																		provider
+																		.name
+																	===	procedure
+																)
+														)
+													)
+												)
+											);
+										}
+										else{
+											throw	(
+														new	Error(
+																	(
+																		[
+																			"#cannot-determine-transform-procedure;",
+
+																			"cannot determine transform procedure;",
+
+																			"@parameter-list:",
+																			`${ parameterList };`
+																		]
+																	)
+																)
+													);
+										}
+									}
+								)
+							);
+						}
+						else{
+							throw	(
+										new	Error(
+													(
+														[
+															"#cannot-determine-transform-procedure;",
+
+															"cannot determine transform procedure;",
+
+															"@parameter-list:",
+															`${ parameterList };`
+														]
+													)
+												)
+									);
+						}
+
+						return	(
+									procedureList
+								);
+					}
+				),
+
+				(
+					[ ]
+				)
+			)
+			.filter(
+				(
+					( procedure ) => (
+							(
+									typeof
+									procedure
+								==	"function"
+							)
+					)
+				)
+			)
+		);
+
+		const transformProcedure = (
+			function transform( value, context ){
+				return	(
+							flow
+							.reduce(
+								(
+									( value, procedure ) => (
+										procedure(
+											(
+												value
+											),
+
+											(
+												context
+											)
+										)
+									)
+								),
+
+								(
+									value
+								)
+							)
+						);
+			}
+		);
+
+		(
+				transformProcedure
+				.property
+			=	(
+					property
+				)
+		);
+
+		this
+		.push(
+			(
+				transformProcedure
+			)
+		);
 
 		return	(
 					this
@@ -1176,6 +1602,25 @@ OptionPrototype.flush = (
 							this
 						)
 					)
+				);
+	}
+);
+
+OptionPrototype.clean = (
+	function clean( ){
+		while(
+				(
+						this
+						.length
+					>	0
+				)
+		){
+			this
+			.pop( )
+		}
+
+		return	(
+					this
 				);
 	}
 );
