@@ -366,8 +366,8 @@ const Option = (
 	require( "./option.js" )
 );
 
-const TEST_OPTION = (
-	async	function TEST_OPTION( ){
+const TEST_OPTION_INSTANCE = (
+	async	function TEST_OPTION_INSTANCE( ){
 				(
 					await	CLEAN_TEST_DIRECTORY( )
 				);
@@ -378,7 +378,11 @@ const TEST_OPTION = (
 
 				try{
 					const actualValue = (
-
+							(
+											Option( ).option
+								instanceof	Option
+							)
+						===	true
 					);
 
 					const testValue = (
@@ -397,9 +401,9 @@ const TEST_OPTION = (
 
 						(
 							[
-								"#test-option;",
+								"#test-option-instance;",
 
-								"test option;",
+								"test option instance;",
 
 								`must return, ${ testValue };`
 							]
@@ -446,7 +450,7 @@ const TEST_OPTION = (
 								),
 
 								"result": (
-									await	TEST_CREATE_NODE_MODULE( )
+									await	TEST_OPTION_INSTANCE( )
 								)
 							}
 						]
