@@ -436,7 +436,7 @@ Option.createProxyOption = (
 						(
 							{
 								"get": (
-									function get( entity, property, proxy ){
+									function get( source, property, target ){
 										if(
 												(
 														Array
@@ -473,8 +473,48 @@ Option.createProxyOption = (
 															.prototype[ property ]
 														==	"function"
 													)
+											){
+												if(
+														(
+																property
+															===	"forEach"
+														)
 
-												||	(
+													||	(
+																property
+															===	"push"
+														)
+												){
+													return	(
+																source[ property ]
+																.bind(
+																	(
+																		{
+																			"source": (
+																				source
+																			),
+
+																			"target": (
+																				target
+																			)
+																		}
+																	)
+																)
+															);
+												}
+												else{
+													return	(
+																source[ property ]
+																.bind(
+																	(
+																		source
+																	)
+																)
+															);
+												}
+											}
+											else if(
+													(
 															typeof
 															Object
 															.prototype[ property ]
@@ -482,17 +522,17 @@ Option.createProxyOption = (
 													)
 											){
 												return	(
-															entity[ property ]
+															source[ property ]
 															.bind(
 																(
-																	entity
+																	source
 																)
 															)
 														);
 											}
 											else{
 												return	(
-															entity[ property ]
+															source[ property ]
 														);
 											}
 										}
@@ -500,15 +540,15 @@ Option.createProxyOption = (
 										if(
 													(
 															typeof
-															entity[ property ]
+															source[ property ]
 														==	"function"
 													)
 										){
 											return	(
-														entity[ property ]
+														source[ property ]
 														.bind(
 															(
-																proxy
+																target
 															)
 														)
 													);
@@ -517,7 +557,7 @@ Option.createProxyOption = (
 										try{
 											if(
 													(
-															entity
+															source
 															.some(
 																(
 																	( provider ) => (
@@ -552,13 +592,13 @@ Option.createProxyOption = (
 														),
 
 														(
-															entity[ CONTEXT ]
+															source[ CONTEXT ]
 														)
 													)
 												);
 
 												return	(
-															entity
+															source
 															.reduce(
 																(
 																	( value, provider ) => (
@@ -599,16 +639,16 @@ Option.createProxyOption = (
 																),
 
 																(
-																	entity[ CONTEXT ][ property ]
+																	source[ CONTEXT ][ property ]
 																)
 															)
 														);
 											}
 
 											(
-													entity[ CONTEXT ][ property ]
+													source[ CONTEXT ][ property ]
 												=	(
-														entity
+														source
 														.reduce(
 															(
 																( value, provider, index ) => (
@@ -643,14 +683,14 @@ Option.createProxyOption = (
 															),
 
 															(
-																entity[ CONTEXT ][ property ]
+																source[ CONTEXT ][ property ]
 															)
 														)
 													)
 											);
 
 											const value = (
-												entity
+												source
 												.reduce(
 													(
 														( value, provider, index ) => (
@@ -685,7 +725,7 @@ Option.createProxyOption = (
 													),
 
 													(
-														entity[ CONTEXT ][ property ]
+														source[ CONTEXT ][ property ]
 													)
 												)
 											);
@@ -713,7 +753,7 @@ Option.createProxyOption = (
 										finally{
 											while(
 													(
-															entity
+															source
 															.some(
 																(
 																	( provider ) => (
@@ -742,7 +782,7 @@ Option.createProxyOption = (
 														===	true
 													)
 											){
-												entity
+												source
 												.forEach(
 													( provider ) => {
 														if(
@@ -766,10 +806,10 @@ Option.createProxyOption = (
 																		)
 																)
 														){
-															entity
+															source
 															.splice(
 																(
-																	entity
+																	source
 																	.indexOf(
 																		(
 																			provider
@@ -790,7 +830,7 @@ Option.createProxyOption = (
 								),
 
 								"set": (
-									function set( entity, property, value ){
+									function set( source, property, value, target ){
 										if(
 												(
 														Array
@@ -821,7 +861,7 @@ Option.createProxyOption = (
 												)
 										){
 											(
-													entity[ property ]
+													source[ property ]
 												=	(
 														value
 													)
@@ -833,13 +873,13 @@ Option.createProxyOption = (
 										}
 
 										(
-												entity[ CONTEXT ][ property ]
+												source[ CONTEXT ][ property ]
 											=	(
 													value
 												)
 										);
 
-										entity
+										source
 										.push(
 											function flush( optionData ){
 												if(
@@ -857,13 +897,13 @@ Option.createProxyOption = (
 													(
 															optionData[ property ]
 														=	(
-																entity[ CONTEXT ][ property ]
+																source[ CONTEXT ][ property ]
 															)
 													);
 												}
 
 												(
-														entity[ CONTEXT ][ property ]
+														source[ CONTEXT ][ property ]
 													=	(
 															undefined
 														)
@@ -873,6 +913,64 @@ Option.createProxyOption = (
 															this
 														);
 											}
+										);
+
+										const context = (
+											Object
+											.assign(
+												(
+													{ }
+												),
+
+												(
+													source[ CONTEXT ]
+												)
+											)
+										);
+
+										source
+										.forEach(
+											(
+												( provider ) => {
+													if(
+															(
+																	typeof
+																	provider
+																==	"function"
+															)
+
+														&&	(
+																	provider
+																	.name
+																===	"transfer"
+															)
+
+														&&	(
+																	provider
+																	.property
+																===	property
+															)
+													){
+														provider(
+															(
+																property
+															),
+
+															(
+																value
+															),
+
+															(
+																context
+															),
+
+															(
+																target
+															)
+														);
+													}
+												}
+											)
 										);
 
 										return	(
@@ -906,6 +1004,135 @@ const OptionPrototype = (
 				)
 			)
 		)
+);
+
+OptionPrototype.forEach = (
+	function forEach( ){
+		const source = (
+				(
+					this
+					.source
+				)
+
+			||	(
+					this
+				)
+		);
+
+		const target = (
+				(
+					this
+					.target
+				)
+
+			||	(
+					this
+				)
+		);
+
+		Array
+		.prototype
+		.forEach
+		.apply(
+			(
+				source
+			),
+
+			(
+				Array
+				.from(
+					(
+						arguments
+					)
+				)
+			)
+		);
+
+		return	(
+					target
+				);
+	}
+);
+
+OptionPrototype.push = (
+	function push( ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
+
+		const source = (
+				(
+					this
+					.source
+				)
+
+			||	(
+					this
+				)
+		);
+
+		const target = (
+				(
+					this
+					.target
+				)
+
+			||	(
+					this
+				)
+		);
+
+		Array
+		.prototype
+		.push
+		.apply(
+			(
+				source
+			),
+
+			(
+				parameterList
+				.map(
+					(
+						( parameter ) => (
+								(
+										(
+												typeof
+												parameter
+											==	"object"
+										)
+
+									||	(
+												typeof
+												parameter
+											!=	"function"
+										)
+								)
+							?	(
+									function data( ){
+										return	(
+													parameter
+												);
+									}
+								)
+							:	(
+									parameter
+								)
+						)
+					)
+				)
+			)
+		);
+
+		return	(
+					target
+				);
+	}
 );
 
 OptionPrototype.context = (
@@ -1345,7 +1572,7 @@ OptionPrototype.transform = (
 			parameterList
 			.slice(
 				(
-					0
+					1
 				)
 			)
 			.reduce(
@@ -1513,7 +1740,7 @@ OptionPrototype.transform = (
 		);
 
 		const transformProcedure = (
-			function transform( value, context ){
+			function transform( value, source ){
 				return	(
 							flow
 							.reduce(
@@ -1525,7 +1752,7 @@ OptionPrototype.transform = (
 											),
 
 											(
-												context
+												source
 											)
 										)
 									)
@@ -1560,13 +1787,172 @@ OptionPrototype.transform = (
 	}
 );
 
+OptionPrototype.transfer = (
+	function transfer( sourceProperty, target ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
+
+		target = (
+			parameterList
+			.slice(
+				(
+					1
+				)
+			)
+			.reduce(
+				(
+					( procedureList, provider ) => {
+						if(
+								(
+										typeof
+										provider
+									==	"string"
+								)
+
+							&&	(
+										provider
+										.length
+									>	0
+								)
+						){
+							procedureList
+							.push(
+								function transfer( property, value, source, target ){
+									(
+											target[ provider ]
+										=	(
+												target[ property ]
+											)
+									);
+
+									return	(
+												target
+											);
+								}
+							);
+						}
+						else if(
+								(
+										typeof
+										provider
+									==	"function"
+								)
+
+							&&	(
+										provider
+										.name
+									===	"transfer"
+								)
+						){
+							procedureList
+							.push(
+								(
+									provider
+								)
+							);
+						}
+						else if(
+								(
+										typeof
+										provider
+									==	"function"
+								)
+						){
+							procedureList
+							.push(
+								function transfer( property, value, source, target ){
+									return	(
+												provider(
+													(
+														property
+													),
+
+													(
+														value
+													),
+
+													(
+														source
+													),
+
+													(
+														target
+													)
+												)
+											);
+								}
+							);
+						}
+						else{
+							throw	(
+										new	Error(
+													(
+														[
+															"#cannot-determine-transfer-procedure;",
+
+															"cannot determine transfer procedure;",
+
+															"@parameter-list:",
+															`${ parameterList };`
+														]
+													)
+												)
+									);
+						}
+
+						return	(
+									procedureList
+								);
+					}
+				),
+
+				(
+					[ ]
+				)
+			)
+		);
+
+		target
+		.forEach(
+			(
+				( transferProcedure ) => {
+					(
+							transferProcedure
+							.property
+						=	(
+								sourceProperty
+							)
+					);
+
+					this
+					.push(
+						(
+							transferProcedure
+						)
+					);
+				}
+			)
+		);
+
+		return	(
+					this
+				);
+	}
+);
+
 OptionPrototype.flush = (
 	function flush( optionData ){
 		return	(
 					this
 					.reduce(
 						(
-							( entity, provider ) => (
+							( target, provider ) => (
 									(
 											(
 													typeof
@@ -1584,7 +1970,7 @@ OptionPrototype.flush = (
 										provider
 										.bind(
 											(
-												entity
+												target
 											)
 										)(
 											(
@@ -1593,7 +1979,7 @@ OptionPrototype.flush = (
 										)
 									)
 								:	(
-										entity
+										target
 									)
 							)
 						),
