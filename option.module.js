@@ -624,11 +624,19 @@ Option.createProxyOption = (
 																		?	(
 																				provider(
 																					(
+																						property
+																					),
+
+																					(
 																						value
 																					),
 
 																					(
 																						context
+																					),
+
+																					(
+																						target
 																					)
 																				)
 																			)
@@ -1740,7 +1748,7 @@ OptionPrototype.transform = (
 		);
 
 		const transformProcedure = (
-			function transform( value, source ){
+			function transform( property, value, source, target ){
 				return	(
 							flow
 							.reduce(
@@ -1748,11 +1756,19 @@ OptionPrototype.transform = (
 									( value, procedure ) => (
 										procedure(
 											(
+												property
+											),
+
+											(
 												value
 											),
 
 											(
 												source
+											),
+
+											(
+												target
 											)
 										)
 									)
