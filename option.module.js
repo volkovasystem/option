@@ -1,24 +1,18 @@
 "use strict";
 
 /*;
-	@module-license:
+	@license:module:
 		MIT License
 
-		Copyright (c) 2020 Richeve S. Bebedor <richeve.bebedor@gmail.com>
+		Copyright (c) 2020-present Richeve S. Bebedor <richeve.bebedor@gmail.com>
 
-		@copyright:
+		@license:copyright:
 			Richeve S. Bebedor
-			<
-				@year:
-					2020
-				@end-year
-			>
-			<
-				@contact:
-					richeve.bebedor@gmail.com
-				@end-contact
-			>
-		@end-copyright
+
+			<@license:year-range:2020-present;>
+
+			<@license:contact-detail:richeve.bebedor@gmail.com;>
+		@license:copyright;
 
 		Permission is hereby granted, free of charge, to any person obtaining a copy
 		of this software and associated documentation files (the "Software"), to deal
@@ -37,107 +31,221 @@
 		LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 		OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 		SOFTWARE.
-	@end-module-license
+	@license:module;
 */
 
+const CONTEXT = (
+	Symbol( "context" )
+);
+
 const Option = (
-	function Option( optionData ){
+	function Option( optionData, providerList ){
 		/*;
-			@class-procedure-definition:
-			@end-class-procedure-definition
+			@definition:
+				@class:#Option
+					@description:
+						Option class interface for procedure parameter.
+					@description;
+				@class;
 
-			@parameter-definition:
-				{
-					"optionData": "
-						[
-							@type:
-									object
-								|	object as Option
-							@end-type:
+				@parameter:#optionData
+					@type:
+							object
+						|	object:as:Option
+					@type;
 
-							<
-								@property-definition:
-								@end-property-definition
-							>
-						]
-					"
-				}
-			@end-parameter-definition
+					@description:
+					@description;
 
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object as Option
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
+					@optional;
+				@parameter;
 
-			@static-property-definition:
-				{
-					"namespace": "
-						[
-							@type:
-									string
+				@parameter:#providerList
+					@type:
+							object:as:Array:of:function
+					@type;
 
-								<
-									@default-value:
-										Option
-									@end-default-value
-								>
-							@end-type
+					@description:
+					@description;
 
-							<
-								@property-definition:
-								@end-property-definition
-							>
-						]
-					",
+					@optional;
+				@parameter;
 
-					"type": "
-						[
-							@type:
-									object as Array of string
+				@result:#result
+					@type:
+							object:as:Option
+					@type;
 
-								<
-									@default-value:
-										class
-										object
-										option
-									@end-default-value
-								>
-							@end-type
+					@description:
+					@description;
+				@result;
 
-							<
-								@property-definition:
-								@end-property-definition
-							>
-						]
-					",
-				}
-			@end-static-property-definition
+				@trigger:#trigger
+					@type:
+							object:as:Error
+					@type;
 
-			@static-procedure-definition:
-				{
-					"checkOption": "
-						[
-							@type:
-									function as checkOption
-							@end-type
+					@description:
+					@description;
 
-							<
-								@procedure-definition:
-									Check if object instance of Option class.
-								@end-procedure-definition
-							>
-						]
-					"
-				}
-			@end-static-procedure-definition
+					@tag:#cannot-create-option-object;
+				@trigger;
+			@definition;
 		*/
+
+		const resolveParameterList = (
+			function resolveParameterList( ){
+				const parameterList = (
+					Array
+					.from(
+						(
+							arguments
+						)
+					)
+				);
+
+				const optionCache = (
+					Object
+					.assign(
+						...	(
+								parameterList
+								.filter(
+									(
+										( parameter ) => (
+												(
+														typeof
+														parameter
+													==	"object"
+												)
+
+											&&	(
+														parameter
+													!==	null
+												)
+
+											&&	(
+														Array
+														.isArray(
+															(
+																parameter
+															)
+														)
+													!==	true
+												)
+										)
+									)
+								)
+								.concat(
+									(
+										[
+											{ }
+										]
+									)
+								)
+								.map(
+									( data ) => (
+											(
+													(
+															(
+																			data
+																instanceof	Option
+															)
+														===	true
+													)
+
+												&&	(
+															typeof
+															data
+															.context
+														==	"function"
+													)
+											)
+										?	(
+												data
+												.context( )
+											)
+										:	(
+												data
+											)
+									)
+								)
+							)
+					)
+				);
+
+				const providerCache = (
+					parameterList
+					.reduce(
+						(
+							( list, parameter ) => {
+								if(
+										(
+												typeof
+												parameter
+											==	"function"
+										)
+								){
+									list
+									.push(
+										(
+											parameter
+										)
+									);
+								}
+								else if(
+										(
+												Array
+												.isArray(
+													(
+														parameter
+													)
+												)
+											===	true
+										)
+								){
+									parameter
+									.forEach(
+										(
+											( provider ) => {
+												if(
+														(
+																typeof
+																provider
+															==	"function"
+														)
+												){
+													list
+													.push(
+														(
+															provider
+														)
+													);
+												}
+											}
+										)
+									);
+								}
+
+								return	(
+											list
+										);
+							}
+						),
+
+						(
+							[ ]
+						)
+					)
+				);
+
+				return	(
+							[
+								optionCache,
+								providerCache
+							]
+						);
+			}
+		);
 
 		if(
 				(
@@ -148,6 +256,30 @@ const Option = (
 					===	true
 				)
 		){
+			(
+					[
+						optionData,
+						providerList
+					]
+				=	(
+						resolveParameterList
+						.apply(
+							(
+								this
+							),
+
+							(
+								Array
+								.from(
+									(
+										arguments
+									)
+								)
+							)
+						)
+					)
+			);
+
 			if(
 					(
 							typeof
@@ -156,924 +288,1780 @@ const Option = (
 					)
 
 				&&	(
-							(
-											optionData
-								instanceof	Option
-							)
-						===	true
-					)
-			){
-				Object
-				.defineProperty(
-					this,
-
-					"$optionData",
-
-					{
-						"value": (
-							(
-								new WeakMap( )
-							)
-							.set(
-								this,
-
-								(
-									Object
-									.assign(
-										{ },
-
-										(
-											optionData
-											.$optionData
-										)
-									)
-								)
-							)
-						),
-
-						"configurable": false,
-						"enumerable": false,
-						"writable": false
-					}
-				);
-			}
-			else if(
-					(
-							typeof
 							optionData
-						==	"object"
+						!==	null
 					)
 			){
-				Object
-				.defineProperty(
-					this,
-
-					"$optionData",
-
-					{
-						"value": (
-							(
-								new WeakMap( )
-							)
-							.set(
-								this,
-
-								(
-									Object
-									.assign(
-										{ },
-
-										optionData
-									)
-								)
-							)
-						),
-
-						"configurable": false,
-						"enumerable": false,
-						"writable": false
-					}
-				);
-			}
-			else if(
-					(
-							typeof
+				(
+						this[ CONTEXT ]
+					=	(
 							optionData
-						!=	"undefined"
-					)
-			){
-				Object
-				.defineProperty(
-					this,
-
-					"$optionData",
-
-					{
-						"value": (
-							(
-								new WeakMap( )
-							)
-							.set(
-								this,
-
-								[ optionData ]
-							)
-						),
-
-						"configurable": false,
-						"enumerable": false,
-						"writable": false
-					}
+						)
 				);
 			}
 			else{
-				Object
-				.defineProperty(
-					this,
-
-					"$optionData",
-
-					{
-						"value": (
-							(
-								new WeakMap( )
-							)
-							.set(
-								this,
-
-								{ }
-							)
-						),
-
-						"configurable": false,
-						"enumerable": false,
-						"writable": false
-					}
+				(
+						this[ CONTEXT ]
+					=	(
+							{ }
+						)
 				);
 			}
 
-			return	this;
-		}
-		else{
-			return	(
-						new	Option(
-								optionData
+			providerList
+			.forEach(
+				(
+					( provider ) => {
+						this
+						.push(
+							(
+								provider
 							)
-					);
-		}
-	}
-);
+						);
+					}
+				)
+			);
 
-Object
-.defineProperty(
-	Option,
+			for(
+				let	property
+				in	optionData
+			){
+				let value = (
+					optionData[ property ]
+				);
 
-	"namespace",
+				const self = (
+					this
+				);
 
-	{
-		"value": "Option",
-
-		"configurable": false,
-		"enumerable": true,
-		"writable": false
-	}
-);
-
-Object
-.defineProperty(
-	Option,
-
-	"type",
-
-	{
-		"value": (
-			Object
-			.freeze(
-				[
-					"class",
-					"object",
-					"option"
-				]
-			)
-		),
-
-		"configurable": false,
-		"enumerable": true,
-		"writable": false
-	}
-);
-
-Object
-.defineProperty(
-	Option,
-
-	"checkOption",
-
-	{
-		"value": (
-			function checkOption( entity ){
-				/*;
-					@parameter-definition:
-						{
-							"entity": "
-								[
-									@type:
-											boolean
-										|	function
-										|	object
-										|	number
-										|	string
-										|	symbol
-										|	undefined
-									@end-type
-
-									<@required;>
-								]
-							"
-						}
-					@end-parameter-definition
-
-					@result-definition:
-						{
-							"result": "
-								[
-									@type:
-											boolean
-									@end-type
-								]
-							"
-						}
-					@end-result-definition
-				*/
-
-				return	(
+				this
+				.push(
+					function flush( optionData ){
+						if(
 								(
 										typeof
-										entity
+										optionData
 									==	"object"
 								)
 
 							&&	(
+										optionData
+									!==	null
+								)
+						){
+							(
+									optionData[ property ]
+								=	(
+										self[ CONTEXT ][ property ]
+									)
+							);
+						}
+
+						(
+								self[ CONTEXT ][ property ]
+							=	(
+									undefined
+								)
+						);
+
+						return	(
+									this
+								);
+					}
+				);
+			}
+
+			return	(
+						this
+					);
+		}
+		else{
+			(
+					[
+						optionData,
+						providerList
+					]
+				=	(
+						resolveParameterList
+						.apply(
+							(
+								null
+							),
+
+							(
+								Array
+								.from(
+									(
+										arguments
+									)
+								)
+							)
+						)
+					)
+			);
+
+			return	(
+						Option
+						.createProxyOption(
+							(
+								new	Option(
 										(
-												(
-																entity
-													instanceof	Option
-												)
-											===	true
+											optionData
+										),
+
+										(
+											providerList
 										)
+									)
+							)
+						)
+					);
+		}
+	}
+);
 
-									||	(
+Option.createProxyOption = (
+	function createProxyOption( optionInstance ){
+		const	{
+					proxy: option,
+					revoke: revokeOption
+				}
+			=	(
+					Proxy
+					.revocable(
+						(
+							optionInstance
+						),
+
+						(
+							{
+								"get": (
+									function get( source, property, target ){
+										if(
 												(
-														typeof
-														(
-															(
-																entity
-																.constructor
-															)
-															.namespace
-														)
-													==	"string"
-												)
-
-											&&	(
-														(
-															(
-																entity
-																.constructor
-																.namespace
-															)
-															.length
-														)
-													>	0
-												)
-
-											&&	(
-														(
-															(
-																entity
-																.constructor
-															)
-															.namespace
-														)
-													===	(
-															Option
-															.namespace
-														)
-												)
-										)
-
-									||	(
-												(
-														typeof
-														(
-															entity
-															.$type
-														)
-													==	"object"
-												)
-
-											&&	(
-														entity
-														.$type
-													!==	null
-												)
-
-											&&	(
 														Array
-														.isArray(
-															entity
-															.$type
+														.prototype
+														.hasOwnProperty(
+															(
+																property
+															)
 														)
 													===	true
 												)
 
-											&&	(
-														(
+											||	(
+														Object
+														.prototype
+														.hasOwnProperty(
 															(
-																Option
-																.type
+																property
 															)
-															.every(
-																( type ) => (
+														)
+													===	true
+												)
+
+											||	(
+														typeof
+														property
+													==	"symbol"
+												)
+										){
+											if(
+													(
+															typeof
+															Array
+															.prototype[ property ]
+														==	"function"
+													)
+											){
+												if(
+														(
+																property
+															===	"forEach"
+														)
+
+													||	(
+																property
+															===	"push"
+														)
+												){
+													return	(
+																source[ property ]
+																.bind(
 																	(
-																		entity
-																		.$type
+																		{
+																			"source": (
+																				source
+																			),
+
+																			"target": (
+																				target
+																			)
+																		}
 																	)
-																	.includes(
-																		type
+																)
+															);
+												}
+												else{
+													return	(
+																source[ property ]
+																.bind(
+																	(
+																		source
+																	)
+																)
+															);
+												}
+											}
+											else if(
+													(
+															typeof
+															Object
+															.prototype[ property ]
+														==	"function"
+													)
+											){
+												return	(
+															source[ property ]
+															.bind(
+																(
+																	source
+																)
+															)
+														);
+											}
+											else{
+												return	(
+															source[ property ]
+														);
+											}
+										}
+
+										if(
+													(
+															typeof
+															source[ property ]
+														==	"function"
+													)
+										){
+											return	(
+														source[ property ]
+														.bind(
+															(
+																target
+															)
+														)
+													);
+										}
+
+										try{
+											if(
+													(
+															source
+															.some(
+																(
+																	( provider ) => (
+																			(
+																					typeof
+																					provider
+																				==	"function"
+																			)
+
+																		&&	(
+																					provider
+																					.name
+																				===	"transform"
+																			)
+
+																		&&	(
+																					provider
+																					.property
+																				===	property
+																			)
 																	)
 																)
 															)
+														===	true
+													)
+											){
+												const context = (
+													Object
+													.assign(
+														(
+															{ }
+														),
+
+														(
+															source[ CONTEXT ]
+														)
+													)
+												);
+
+												return	(
+															source
+															.reduce(
+																(
+																	( value, provider ) => (
+																			(
+																					(
+																							typeof
+																							provider
+																						==	"function"
+																					)
+
+																				&&	(
+																							provider
+																							.name
+																						===	"transform"
+																					)
+
+																				&&	(
+																							provider
+																							.property
+																						===	property
+																					)
+																			)
+																		?	(
+																				provider(
+																					(
+																						property
+																					),
+
+																					(
+																						value
+																					),
+
+																					(
+																						context
+																					),
+
+																					(
+																						target
+																					)
+																				)
+																			)
+																		:	(
+																				value
+																			)
+																	)
+																),
+
+																(
+																	source[ CONTEXT ][ property ]
+																)
+															)
+														);
+											}
+
+											(
+													source[ CONTEXT ][ property ]
+												=	(
+														source
+														.reduce(
+															(
+																( value, provider, index ) => (
+																		(
+																				(
+																						typeof
+																						provider
+																					==	"function"
+																				)
+
+																			&&	(
+																						provider
+																						.name
+																					===	"resolve"
+																				)
+																		)
+																	?	(
+																			provider(
+																				(
+																					property
+																				),
+
+																				(
+																					value
+																				)
+																			)
+																		)
+																	:	(
+																			value
+																		)
+																)
+															),
+
+															(
+																source[ CONTEXT ][ property ]
+															)
+														)
+													)
+											);
+
+											const value = (
+												source
+												.reduce(
+													(
+														( value, provider, index ) => (
+																(
+																		(
+																				typeof
+																				provider
+																			==	"function"
+																		)
+
+																	&&	(
+																				provider
+																				.name
+																			===	"format"
+																		)
+																)
+															?	(
+																	provider(
+																		(
+																			property
+																		),
+
+																		(
+																			value
+																		)
+																	)
+																)
+															:	(
+																	value
+																)
+														)
+													),
+
+													(
+														source[ CONTEXT ][ property ]
+													)
+												)
+											);
+
+											return	(
+														value
+													);
+										}
+										catch( error ){
+											throw	(
+														new	Error(
+																	(
+																		[
+																			"#cannot-get-option-property;",
+
+																			"cannot get option property;",
+
+																			"@error-data:",
+																			`${ error };`
+																		]
+																	)
+																)
+													);
+										}
+										finally{
+											while(
+													(
+															source
+															.some(
+																(
+																	( provider ) => (
+																			(
+																					typeof
+																					provider
+																				==	"function"
+																			)
+
+																		&&	(
+																					(
+																							provider
+																							.name
+																						===	"resolve"
+																					)
+
+																				||	(
+																							provider
+																							.name
+																						===	"format"
+																					)
+																			)
+																	)
+																)
+															)
+														===	true
+													)
+											){
+												source
+												.forEach(
+													( provider ) => {
+														if(
+																(
+																		typeof
+																		provider
+																	==	"function"
+																)
+
+															&&	(
+																		(
+																				provider
+																				.name
+																			===	"resolve"
+																		)
+
+																	||	(
+																				provider
+																				.name
+																			===	"format"
+																		)
+																)
+														){
+															source
+															.splice(
+																(
+																	source
+																	.indexOf(
+																		(
+																			provider
+																		)
+																	)
+																),
+
+																(
+																	1
+																)
+															);
+														}
+													}
+												);
+											}
+										}
+									}
+								),
+
+								"set": (
+									function set( source, property, value, target ){
+										if(
+												(
+														Array
+														.prototype
+														.hasOwnProperty(
+															(
+																property
+															)
 														)
 													===	true
 												)
-										)
-								)
-						);
-			}
-		),
 
-		"configurable": false,
-		"enumerable": false,
-		"writable": false
+											||	(
+														Object
+														.prototype
+														.hasOwnProperty(
+															(
+																property
+															)
+														)
+													===	true
+												)
+
+											||	(
+														typeof
+														property
+													==	"symbol"
+												)
+										){
+											(
+													source[ property ]
+												=	(
+														value
+													)
+											);
+
+											return	(
+														true
+													);
+										}
+
+										(
+												source[ CONTEXT ][ property ]
+											=	(
+													value
+												)
+										);
+
+										source
+										.push(
+											function flush( optionData ){
+												if(
+														(
+																typeof
+																optionData
+															==	"object"
+														)
+
+													&&	(
+																optionData
+															!==	null
+														)
+												){
+													(
+															optionData[ property ]
+														=	(
+																source[ CONTEXT ][ property ]
+															)
+													);
+												}
+
+												(
+														source[ CONTEXT ][ property ]
+													=	(
+															undefined
+														)
+												);
+
+												return	(
+															this
+														);
+											}
+										);
+
+										const context = (
+											Object
+											.assign(
+												(
+													{ }
+												),
+
+												(
+													source[ CONTEXT ]
+												)
+											)
+										);
+
+										source
+										.forEach(
+											(
+												( provider ) => {
+													if(
+															(
+																	typeof
+																	provider
+																==	"function"
+															)
+
+														&&	(
+																	provider
+																	.name
+																===	"transfer"
+															)
+
+														&&	(
+																	provider
+																	.property
+																===	property
+															)
+													){
+														provider(
+															(
+																property
+															),
+
+															(
+																value
+															),
+
+															(
+																context
+															),
+
+															(
+																target
+															)
+														);
+													}
+												}
+											)
+										);
+
+										return	(
+													true
+												);
+									}
+								)
+							}
+						)
+					)
+				);
+
+		return	(
+					{
+						"option": option,
+						"revokeOption": revokeOption
+					}
+				);
 	}
 );
 
-Option.prototype.set = (
-	function set( property, value, scopeData ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"property": "
-						[
-							@type:
-									number
-								|	string
-								|	symbol
-							@end-type
-
-							<@required;>
-						]
-					",
-					"value": "
-						[
-							@type:
-									boolean
-								|	function
-								|	object
-								|	number
-								|	string
-								|	symbol
-								|	undefined
-							@end-type
-
-							<@required;>
-						]
-					",
-					"scopeData": "
-						[
-							@type:
-									object
-							@end-type
-
-							<@optional;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@trigger-definition:
-				{
-					"trigger": "
-						[
-							@type:
-									object as Error
-							@end-type
-
-							<@tag: invalid-set-option-scope-data;>
-							<@tag: invalid-set-option-property;>
-						]
-					"
-				}
-			@end-trigger-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object as Option
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		if(
+const OptionPrototype = (
+		Option
+		.prototype
+	=	(
+			Object
+			.create(
 				(
-						typeof
-						scopeData
-					==	"object"
+					Array
+					.prototype
 				)
+			)
+		)
+);
 
-			&&	(
-						scopeData
-					!==	null
-				)
-		){
-			this
-			.setScope(
-				scopeData
-			);
-		}
-
-		if(
+OptionPrototype.forEach = (
+	function forEach( ){
+		const source = (
 				(
-						typeof
-						property
-					==	"string"
+					this
+					.source
 				)
 
 			||	(
-						typeof
-						property
-					==	"number"
+					this
 				)
-
-			||	(
-						typeof
-						property
-					==	"symbol"
-				)
-		){
-				this
-				.getScope( )[
-					property
-				]
-			=	value;
-		}
-		else{
-			throw	(
-						new	Error(
-								[
-									"#invalid-set-option-property;",
-
-									"cannot set option property",
-									"invalid property",
-
-									`@property: ${ property }`
-								]
-							)
-					);
-		}
-
-		if(
-				(
-						property
-					in	this
-				)
-			===	true
-		){
-			return	this;
-		}
-
-		Object
-		.defineProperty(
-			this,
-
-			property,
-
-			{
-				"configurable": false,
-				"enumerable": false,
-
-				"get": (
-					function get( ){
-						return	(
-									this
-									.getScope( )[
-										property
-									]
-								);
-					}
-				)
-			}
 		);
 
-		return	this;
-	}
-);
-
-Option.prototype.setOption = (
-	function setOption( property, value ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"property": "
-						[
-							@type:
-									number
-								|	string
-								|	symbol
-							@end-type
-
-							<@required;>
-						]
-					",
-
-					"value": "
-						[
-							@type:
-									boolean
-								|	function
-								|	object
-								|	number
-								|	string
-								|	symbol
-								|	undefined
-							@end-type
-
-							<@required;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@trigger-definition:
-				{
-					"trigger": "
-						[
-							@type:
-									object as Error
-							@end-type
-
-							<@tag: invalid-set-option-scope-data;>
-							<@tag: invalid-set-option-property;>
-						]
-					"
-				}
-			@end-trigger-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object as Option
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		return	(
-					this
-					.set(
-						property,
-						value
-					)
-				);
-	}
-);
-
-Option.prototype.getOption = (
-	function getOption( property ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"property": "
-						[
-							@type:
-									number
-								|	string
-								|	symbol
-							@end-type
-
-							<@required;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									string
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		return	this[ property ];
-	}
-);
-
-Option.prototype.checkOption = (
-	function checkOption( optionQuery ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"optionQuery": "
-						[
-							@type:
-							@end-type
-
-							<@optional;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									boolean
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		if(
+		const target = (
 				(
-						typeof
-						optionQuery
-					==	"undefined"
+					this
+					.target
 				)
 
 			||	(
-						arguments
-						.length
-					<=	0
+					this
 				)
-		){
-			return	(
-							(
-									(
-										Object
-										.keys(
-											(
-												this
-												.getScope( )
-											)
-											.$optionData
-										)
-									)
-									.length
-								>	0
-							)
-					);
-		}
-		else{
-			return	(
-							(
-									(
-											optionQuery
-										in	this
-									)
-								===	true
-							)
+		);
 
-						||	(
-									typeof
-									this[ optionQuery ]
-								!=	"undefined"
-							)
-					);
-		}
-	}
-);
-
-Option.prototype.setScope = (
-	function setScope( scopeData ){
-		/*;
-			@procedure-definition:
-				Set option data container scope.
-			@end-procedure-definition
-
-			@parameter-definition:
-				{
-					"scopeData": "
-						[
-							@type:
-									object
-							@end-type
-
-							<@required;>
-						]
-					"
-				}
-			@end-parameter-definition
-
-			@trigger-definition:
-				{
-					"trigger": "
-						[
-							@type:
-									object as Error
-							@end-type
-
-							<@tag: invalid-set-option-scope-data;>
-						]
-					"
-				}
-			@end-trigger-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object as Option
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
-		if(
-				(
-						typeof
-						scopeData
-					==	"object"
-				)
-
-			&&	(
-						scopeData
-					!==	null
-				)
-		){
+		Array
+		.prototype
+		.forEach
+		.apply(
 			(
-				this
-				.$optionData
+				source
+			),
+
+			(
+				Array
+				.from(
+					(
+						arguments
+					)
+				)
 			)
-			.set(
-				this,
-				scopeData
-			);
-		}
-		else{
-			throw	(
-						new	Error(
-								[
-									"#invalid-set-option-scope-data;",
-
-									"cannot set option scope data",
-									"invalid scope data",
-
-									`@scope-data: ${ scopeData }`
-								]
-							)
-					);
-		}
-
-		return	this;
-	}
-);
-
-Option.prototype.getScope = (
-	function getScope( ){
-		/*;
-			@procedure-definition:
-				Get option data container scope.
-			@end-procedure-definition
-
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
+		);
 
 		return	(
-					(
-						this
-						.$optionData
-					)
-					.get(
-						this
-					)
+					target
 				);
 	}
 );
 
-Option.prototype.valueOf = (
-	function valueOf( ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
+OptionPrototype.push = (
+	function push( ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
 
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									object
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
+		const source = (
+				(
+					this
+					.source
+				)
+
+			||	(
+					this
+				)
+		);
+
+		const target = (
+				(
+					this
+					.target
+				)
+
+			||	(
+					this
+				)
+		);
+
+		Array
+		.prototype
+		.push
+		.apply(
+			(
+				source
+			),
+
+			(
+				parameterList
+				.map(
+					(
+						( parameter ) => (
+								(
+										(
+												typeof
+												parameter
+											==	"object"
+										)
+
+									||	(
+												typeof
+												parameter
+											!=	"function"
+										)
+								)
+							?	(
+									function data( ){
+										return	(
+													parameter
+												);
+									}
+								)
+							:	(
+									parameter
+								)
+						)
+					)
+				)
+			)
+		);
 
 		return	(
-					Object
-					.freeze(
-						Object
-						.assign(
-							{ },
+					target
+				);
+	}
+);
 
-							(
-								this
-								.getScope( )
+OptionPrototype.context = (
+	function context( ){
+		return	(
+					this[ CONTEXT ]
+				);
+	}
+);
+
+OptionPrototype.effect = (
+	function effect( ){
+		return	(
+					Object
+					.keys(
+						(
+							this[ CONTEXT ]
+						)
+					)
+					.reduce(
+						(
+							( effect, property ) => (
+								(
+										effect[ property ]
+									=	this[ property ]
+								),
+								(
+									effect
+								)
 							)
+						),
+
+						(
+							{ }
 						)
 					)
 				);
 	}
 );
 
-Option.prototype.toString = (
-	function toString( ){
-		/*;
-			@procedure-definition:
-			@end-procedure-definition
+OptionPrototype.check = (
+	function check( property ){
+		return	(
+						(
+								property
+							in	this[ CONTEXT ]
+						)
+					===	true
+				);
+	}
+);
 
-			@result-definition:
-				{
-					"result": "
-						[
-							@type:
-									string
-							@end-type
-						]
-					"
-				}
-			@end-result-definition
-		*/
-
+OptionPrototype.format = (
+	function format( formatProcedure ){
 		if(
 				(
 						typeof
-						require
-					==	"function"
+						formatProcedure
+					==	"string"
+				)
+
+			&&	(
+						formatProcedure
+						.length
+					>	0
+				)
+
+			&&	(
+						formatProcedure
+					!==	"format"
+				)
+
+			&&	(
+						formatProcedure
+						.indexOf(
+							(
+								"format"
+							)
+						)
+					===	0
 				)
 		){
-			const util = require( "util" );
+			formatProcedure = (
+				this
+				.find(
+					( provider ) => (
+							(
+									typeof
+									provider
+								==	"function"
+							)
+
+						&&	(
+									provider
+									.name
+								===	formatProcedure
+							)
+					)
+				)
+			);
 
 			if(
 					(
 							typeof
-							(
-								util
-								.inspect
-							)
-						==	"function"
+							formatProcedure
+						!=	"function"
 					)
 			){
-				return	(
-							util
-							.inspect(
-								this
-								.getScope( )
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-find-format-procedure;",
+
+												"cannot find format procedure;",
+
+												"@format-procedure:",
+												`${ formatProcedure };`
+											]
+										)
+									)
+						);
+			}
+
+			this
+			.push(
+				function format( property, value ){
+					return	(
+								formatProcedure(
+									(
+										property
+									),
+
+									(
+										value
+									)
+								)
+							);
+				}
+			);
+		}
+		else if(
+				(
+						typeof
+						formatProcedure
+					==	"function"
+				)
+		){
+			if(
+					(
+							formatProcedure
+							.name
+						===	"format"
+					)
+
+				||	(
+							formatProcedure
+							.name
+							.indexOf(
+								(
+									"format"
+								)
 							)
+						===	0
+					)
+			){
+				this
+				.push(
+					(
+						formatProcedure
+					)
+				);
+			}
+			else if(
+					(
+							formatProcedure
+							.name
+							.length
+						<=	0
+					)
+			){
+				this
+				.push(
+					function format( property, value ){
+						return	(
+									formatProcedure(
+										(
+											property
+										),
+
+										(
+											value
+										)
+									)
+								);
+					}
+				);
+			}
+			else{
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-determine-format-procedure;",
+
+												"cannot determine format procedure;",
+
+												"@format-procedure:",
+												`${ formatProcedure };`
+											]
+										)
+									)
 						);
 			}
 		}
+		else{
+			throw	(
+						new	Error(
+									(
+										[
+											"#cannot-provide-format-procedure;",
 
+											"cannot provide format procedure;",
+
+											"@format-procedure:",
+											`${ formatProcedure };`
+										]
+									)
+								)
+					);
+		}
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.resolve = (
+	function resolve( resolveProcedure ){
+		if(
+				(
+						typeof
+						resolveProcedure
+					==	"string"
+				)
+
+			&&	(
+						resolveProcedure
+						.length
+					>	0
+				)
+
+			&&	(
+						resolveProcedure
+					!==	"resolve"
+				)
+
+			&&	(
+						resolveProcedure
+						.indexOf(
+							(
+								"resolve"
+							)
+						)
+					===	0
+				)
+		){
+			resolveProcedure = (
+				this
+				.find(
+					( provider ) => (
+							(
+									typeof
+									provider
+								==	"function"
+							)
+
+						&&	(
+									provider
+									.name
+								===	resolveProcedure
+							)
+					)
+				)
+			);
+
+			if(
+					(
+							typeof
+							resolveProcedure
+						!=	"function"
+					)
+			){
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-find-resolve-procedure;",
+
+												"cannot find resolve procedure;",
+
+												"@resolve-procedure:",
+												`${ resolveProcedure };`
+											]
+										)
+									)
+						);
+			}
+
+			this
+			.push(
+				function resolve( property, value ){
+					return	(
+								resolveProcedure(
+									(
+										property
+									),
+
+									(
+										value
+									)
+								)
+							);
+				}
+			);
+		}
+		else if(
+				(
+						typeof
+						resolveProcedure
+					==	"function"
+				)
+		){
+			if(
+					(
+							resolveProcedure
+							.name
+						===	"resolve"
+					)
+
+				||	(
+							resolveProcedure
+							.name
+							.indexOf(
+								(
+									"resolve"
+								)
+							)
+						===	0
+					)
+			){
+				this
+				.push(
+					(
+						resolveProcedure
+					)
+				);
+			}
+			else if(
+					(
+							resolveProcedure
+							.name
+							.length
+						<=	0
+					)
+			){
+				this
+				.push(
+					function resolve( property, value ){
+						return	(
+									resolveProcedure(
+										(
+											property
+										),
+
+										(
+											value
+										)
+									)
+								);
+					}
+				);
+			}
+			else{
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-determine-resolve-procedure;",
+
+												"cannot determine resolve procedure;",
+
+												"@resolve-procedure:",
+												`${ resolveProcedure };`
+											]
+										)
+									)
+						);
+			}
+		}
+		else{
+			throw	(
+						new	Error(
+									(
+										[
+											"#cannot-provide-resolve-procedure;",
+
+											"cannot provide resolve procedure;",
+
+											"@resolve-procedure:",
+											`${ resolveProcedure };`
+										]
+									)
+								)
+					);
+		}
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.transform = (
+	function transform( property, flow ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
+
+		flow = (
+			parameterList
+			.slice(
+				(
+					1
+				)
+			)
+			.reduce(
+				(
+					( procedureList, parameter ) => {
+						if(
+								(
+										typeof
+										parameter
+									==	"function"
+								)
+						){
+							procedureList
+							.push(
+								(
+									parameter
+								)
+							);
+						}
+						else if(
+								(
+										typeof
+										parameter
+									==	"string"
+								)
+						){
+							procedureList
+							.push(
+								(
+									this
+									.find(
+										( provider ) => (
+												(
+														typeof
+														provider
+													==	"function"
+												)
+
+											&&	(
+														provider
+														.name
+													===	parameter
+												)
+										)
+									)
+								)
+							);
+						}
+						else if(
+								(
+										Array
+										.isArray(
+											(
+												parameter
+											)
+										)
+									===	true
+								)
+						){
+							parameter
+							.forEach(
+								(
+									( procedure ) => {
+										if(
+												(
+														typeof
+														procedure
+													==	"function"
+												)
+										){
+											procedureList
+											.push(
+												(
+													procedure
+												)
+											);
+										}
+										else if(
+												(
+														typeof
+														procedure
+													==	"string"
+												)
+										){
+											procedureList
+											.push(
+												(
+													this
+													.find(
+														( provider ) => (
+																(
+																		typeof
+																		provider
+																	==	"function"
+																)
+
+															&&	(
+																		provider
+																		.name
+																	===	procedure
+																)
+														)
+													)
+												)
+											);
+										}
+										else{
+											throw	(
+														new	Error(
+																	(
+																		[
+																			"#cannot-determine-transform-procedure;",
+
+																			"cannot determine transform procedure;",
+
+																			"@parameter-list:",
+																			`${ parameterList };`
+																		]
+																	)
+																)
+													);
+										}
+									}
+								)
+							);
+						}
+						else{
+							throw	(
+										new	Error(
+													(
+														[
+															"#cannot-determine-transform-procedure;",
+
+															"cannot determine transform procedure;",
+
+															"@parameter-list:",
+															`${ parameterList };`
+														]
+													)
+												)
+									);
+						}
+
+						return	(
+									procedureList
+								);
+					}
+				),
+
+				(
+					[ ]
+				)
+			)
+			.filter(
+				(
+					( procedure ) => (
+							(
+									typeof
+									procedure
+								==	"function"
+							)
+					)
+				)
+			)
+		);
+
+		const transformProcedure = (
+			function transform( property, value, source, target ){
+				return	(
+							flow
+							.reduce(
+								(
+									( value, procedure ) => (
+										procedure(
+											(
+												property
+											),
+
+											(
+												value
+											),
+
+											(
+												source
+											),
+
+											(
+												target
+											)
+										)
+									)
+								),
+
+								(
+									value
+								)
+							)
+						);
+			}
+		);
+
+		(
+				transformProcedure
+				.property
+			=	(
+					property
+				)
+		);
+
+		this
+		.push(
+			(
+				transformProcedure
+			)
+		);
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.transfer = (
+	function transfer( sourceProperty, target ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
+
+		target = (
+			parameterList
+			.slice(
+				(
+					1
+				)
+			)
+			.reduce(
+				(
+					( procedureList, provider ) => {
+						if(
+								(
+										typeof
+										provider
+									==	"string"
+								)
+
+							&&	(
+										provider
+										.length
+									>	0
+								)
+						){
+							procedureList
+							.push(
+								function transfer( property, value, source, target ){
+									(
+											target[ provider ]
+										=	(
+												target[ property ]
+											)
+									);
+
+									return	(
+												target
+											);
+								}
+							);
+						}
+						else if(
+								(
+										typeof
+										provider
+									==	"function"
+								)
+
+							&&	(
+										provider
+										.name
+									===	"transfer"
+								)
+						){
+							procedureList
+							.push(
+								(
+									provider
+								)
+							);
+						}
+						else if(
+								(
+										typeof
+										provider
+									==	"function"
+								)
+						){
+							procedureList
+							.push(
+								function transfer( property, value, source, target ){
+									return	(
+												provider(
+													(
+														property
+													),
+
+													(
+														value
+													),
+
+													(
+														source
+													),
+
+													(
+														target
+													)
+												)
+											);
+								}
+							);
+						}
+						else{
+							throw	(
+										new	Error(
+													(
+														[
+															"#cannot-determine-transfer-procedure;",
+
+															"cannot determine transfer procedure;",
+
+															"@parameter-list:",
+															`${ parameterList };`
+														]
+													)
+												)
+									);
+						}
+
+						return	(
+									procedureList
+								);
+					}
+				),
+
+				(
+					[ ]
+				)
+			)
+		);
+
+		target
+		.forEach(
+			(
+				( transferProcedure ) => {
+					(
+							transferProcedure
+							.property
+						=	(
+								sourceProperty
+							)
+					);
+
+					this
+					.push(
+						(
+							transferProcedure
+						)
+					);
+				}
+			)
+		);
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.flush = (
+	function flush( optionData ){
+		return	(
+					this
+					.reduce(
+						(
+							( target, provider ) => (
+									(
+											(
+													typeof
+													provider
+												==	"function"
+											)
+
+										&&	(
+													provider
+													.name
+												===	"flush"
+											)
+									)
+								?	(
+										provider
+										.bind(
+											(
+												target
+											)
+										)(
+											(
+												optionData
+											)
+										)
+									)
+								:	(
+										target
+									)
+							)
+						),
+
+						(
+							this
+						)
+					)
+				);
+	}
+);
+
+OptionPrototype.clean = (
+	function clean( ){
+		while(
+				(
+						this
+						.length
+					>	0
+				)
+		){
+			this
+			.pop( )
+		}
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.valueOf = (
+	function valueOf( ){
+		return	(
+					Object
+					.assign(
+						(
+							{ }
+						),
+
+						(
+							this[ CONTEXT ]
+						)
+					)
+				);
+	}
+);
+
+OptionPrototype.toJSON = (
+	function toJSON( ){
+		return	(
+					this
+					.valueOf( )
+				);
+	}
+);
+
+OptionPrototype.toString = (
+	function toString( ){
 		return	(
 					JSON
 					.stringify(
-						this
-						.getScope( )
+						(
+							this
+							.toJSON( )
+						)
 					)
 				);
 	}
