@@ -34,8 +34,8 @@
 	@license:module;
 */
 
-const CONTEXT = (
-	Symbol( "context" )
+const OPTION_CONTEXT = (
+	Symbol( "option-context" )
 );
 
 const Option = (
@@ -87,8 +87,6 @@ const Option = (
 
 					@description:
 					@description;
-
-					@tag:#cannot-create-option-object;
 				@trigger;
 			@definition;
 		*/
@@ -156,13 +154,13 @@ const Option = (
 												&&	(
 															typeof
 															data
-															.context
+															.getContext
 														==	"function"
 													)
 											)
 										?	(
 												data
-												.context( )
+												.getContext( )
 											)
 										:	(
 												data
@@ -293,7 +291,7 @@ const Option = (
 					)
 			){
 				(
-						this[ CONTEXT ]
+						this[ OPTION_CONTEXT ]
 					=	(
 							optionData
 						)
@@ -301,7 +299,7 @@ const Option = (
 			}
 			else{
 				(
-						this[ CONTEXT ]
+						this[ OPTION_CONTEXT ]
 					=	(
 							{ }
 						)
@@ -352,13 +350,13 @@ const Option = (
 							(
 									optionData[ property ]
 								=	(
-										self[ CONTEXT ][ property ]
+										self[ OPTION_CONTEXT ][ property ]
 									)
 							);
 						}
 
 						(
-								self[ CONTEXT ][ property ]
+								self[ OPTION_CONTEXT ][ property ]
 							=	(
 									undefined
 								)
@@ -584,7 +582,7 @@ Option.createProxyOption = (
 														===	true
 													)
 											){
-												const context = (
+												const sourceContext = (
 													Object
 													.assign(
 														(
@@ -592,7 +590,7 @@ Option.createProxyOption = (
 														),
 
 														(
-															source[ CONTEXT ]
+															source[ OPTION_CONTEXT ]
 														)
 													)
 												);
@@ -632,7 +630,7 @@ Option.createProxyOption = (
 																					),
 
 																					(
-																						context
+																						sourceContext
 																					),
 
 																					(
@@ -647,14 +645,14 @@ Option.createProxyOption = (
 																),
 
 																(
-																	source[ CONTEXT ][ property ]
+																	source[ OPTION_CONTEXT ][ property ]
 																)
 															)
 														);
 											}
 
 											(
-													source[ CONTEXT ][ property ]
+													source[ OPTION_CONTEXT ][ property ]
 												=	(
 														source
 														.reduce(
@@ -691,7 +689,7 @@ Option.createProxyOption = (
 															),
 
 															(
-																source[ CONTEXT ][ property ]
+																source[ OPTION_CONTEXT ][ property ]
 															)
 														)
 													)
@@ -701,7 +699,7 @@ Option.createProxyOption = (
 												source
 												.reduce(
 													(
-														( value, provider, index ) => (
+														( value, provider ) => (
 																(
 																		(
 																				typeof
@@ -733,7 +731,7 @@ Option.createProxyOption = (
 													),
 
 													(
-														source[ CONTEXT ][ property ]
+														source[ OPTION_CONTEXT ][ property ]
 													)
 												)
 											);
@@ -880,8 +878,111 @@ Option.createProxyOption = (
 													);
 										}
 
+										if(
+												(
+														source[ OPTION_CONTEXT ][ property ]
+													!==	value
+												)
+										){
+											return	(
+														true
+													);
+										}
+
+										if(
+												(
+														source
+														.some(
+															(
+																( provider ) => (
+																		(
+																				typeof
+																				provider
+																			==	"function"
+																		)
+
+																	&&	(
+																				provider
+																				.name
+																			===	"detour"
+																		)
+
+																	&&	(
+																				provider
+																				.property
+																			===	property
+																		)
+																)
+															)
+														)
+													===	true
+												)
+										){
+											const sourceContext = (
+												Object
+												.assign(
+													(
+														{ }
+													),
+
+													(
+														source[ OPTION_CONTEXT ]
+													)
+												)
+											);
+
+											source
+											.forEach(
+												(
+													( provider ) => {
+														if(
+																(
+																		typeof
+																		provider
+																	==	"function"
+																)
+
+															&&	(
+																		provider
+																		.name
+																	===	"detour"
+																)
+
+															&&	(
+																		provider
+																		.property
+																	===	property
+																)
+														){
+															provider(
+																(
+																	property
+																),
+
+																(
+																	value
+																),
+
+																(
+																	sourceContext
+																),
+
+																(
+																	target
+																)
+															);
+														}
+													}
+												)
+											);
+
+											return	(
+														true
+													);
+										}
+
 										(
-												source[ CONTEXT ][ property ]
+												source[ OPTION_CONTEXT ][ property ]
 											=	(
 													value
 												)
@@ -905,13 +1006,13 @@ Option.createProxyOption = (
 													(
 															optionData[ property ]
 														=	(
-																source[ CONTEXT ][ property ]
+																source[ OPTION_CONTEXT ][ property ]
 															)
 													);
 												}
 
 												(
-														source[ CONTEXT ][ property ]
+														source[ OPTION_CONTEXT ][ property ]
 													=	(
 															undefined
 														)
@@ -923,63 +1024,93 @@ Option.createProxyOption = (
 											}
 										);
 
-										const context = (
-											Object
-											.assign(
+										if(
 												(
-													{ }
-												),
+														source
+														.some(
+															(
+																( provider ) => (
+																		(
+																				typeof
+																				provider
+																			==	"function"
+																		)
 
-												(
-													source[ CONTEXT ]
+																	&&	(
+																				provider
+																				.name
+																			===	"transfer"
+																		)
+
+																	&&	(
+																				provider
+																				.property
+																			===	property
+																		)
+																)
+															)
+														)
+													===	true
 												)
-											)
-										);
+										){
+											const sourceContext = (
+												Object
+												.assign(
+													(
+														{ }
+													),
 
-										source
-										.forEach(
-											(
-												( provider ) => {
-													if(
-															(
-																	typeof
-																	provider
-																==	"function"
-															)
+													(
+														source[ OPTION_CONTEXT ]
+													)
+												)
+											);
 
-														&&	(
-																	provider
-																	.name
-																===	"transfer"
-															)
+											source
+											.forEach(
+												(
+													( provider ) => {
+														if(
+																(
+																		typeof
+																		provider
+																	==	"function"
+																)
 
-														&&	(
-																	provider
-																	.property
-																===	property
-															)
-													){
-														provider(
-															(
-																property
-															),
+															&&	(
+																		provider
+																		.name
+																	===	"transfer"
+																)
 
-															(
-																value
-															),
+															&&	(
+																		provider
+																		.property
+																	===	property
+																)
+														){
+															provider(
+																(
+																	property
+																),
 
-															(
-																context
-															),
+																(
+																	value
+																),
 
-															(
-																target
-															)
-														);
+																(
+																	sourceContext
+																),
+
+																(
+																	target
+																)
+															);
+														}
 													}
-												}
-											)
-										);
+												)
+											);
+										}
 
 										return	(
 													true
@@ -1143,21 +1274,21 @@ OptionPrototype.push = (
 	}
 );
 
-OptionPrototype.context = (
-	function context( ){
+OptionPrototype.getContext = (
+	function getContext( ){
 		return	(
-					this[ CONTEXT ]
+					this[ OPTION_CONTEXT ]
 				);
 	}
 );
 
-OptionPrototype.effect = (
-	function effect( ){
+OptionPrototype.getEffect = (
+	function getEffect( ){
 		return	(
 					Object
 					.keys(
 						(
-							this[ CONTEXT ]
+							this[ OPTION_CONTEXT ]
 						)
 					)
 					.reduce(
@@ -1181,20 +1312,20 @@ OptionPrototype.effect = (
 	}
 );
 
-OptionPrototype.check = (
-	function check( property ){
+OptionPrototype.checkOption = (
+	function checkOption( property ){
 		return	(
 						(
 								property
-							in	this[ CONTEXT ]
+							in	this[ OPTION_CONTEXT ]
 						)
 					===	true
 				);
 	}
 );
 
-OptionPrototype.format = (
-	function format( formatProcedure ){
+OptionPrototype.formatOption = (
+	function formatOption( formatProcedure ){
 		if(
 				(
 						typeof
@@ -1379,8 +1510,8 @@ OptionPrototype.format = (
 	}
 );
 
-OptionPrototype.resolve = (
-	function resolve( resolveProcedure ){
+OptionPrototype.resolveOption = (
+	function resolveOption( resolveProcedure ){
 		if(
 				(
 						typeof
@@ -1565,8 +1696,8 @@ OptionPrototype.resolve = (
 	}
 );
 
-OptionPrototype.transform = (
-	function transform( property, flow ){
+OptionPrototype.transformOption = (
+	function transformOption( property, flowList ){
 		const parameterList = (
 			Array
 			.from(
@@ -1576,7 +1707,7 @@ OptionPrototype.transform = (
 			)
 		);
 
-		flow = (
+		flowList = (
 			parameterList
 			.slice(
 				(
@@ -1750,7 +1881,7 @@ OptionPrototype.transform = (
 		const transformProcedure = (
 			function transform( property, value, source, target ){
 				return	(
-							flow
+							flowList
 							.reduce(
 								(
 									( value, procedure ) => (
@@ -1803,8 +1934,8 @@ OptionPrototype.transform = (
 	}
 );
 
-OptionPrototype.transfer = (
-	function transfer( sourceProperty, target ){
+OptionPrototype.transferOption = (
+	function transferOption( sourceProperty, targetList ){
 		const parameterList = (
 			Array
 			.from(
@@ -1814,127 +1945,130 @@ OptionPrototype.transfer = (
 			)
 		);
 
-		target = (
-			parameterList
-			.slice(
-				(
-					1
-				)
-			)
-			.reduce(
-				(
-					( procedureList, provider ) => {
-						if(
-								(
-										typeof
-										provider
-									==	"string"
-								)
+		(
+				targetList
+			=	(
+					parameterList
+					.slice(
+						(
+							1
+						)
+					)
+					.reduce(
+						(
+							( procedureList, provider ) => {
+								if(
+										(
+												typeof
+												provider
+											==	"string"
+										)
 
-							&&	(
-										provider
-										.length
-									>	0
-								)
-						){
-							procedureList
-							.push(
-								function transfer( property, value, source, target ){
-									(
-											target[ provider ]
-										=	(
-												target[ property ]
-											)
-									);
-
-									return	(
-												target
-											);
-								}
-							);
-						}
-						else if(
-								(
-										typeof
-										provider
-									==	"function"
-								)
-
-							&&	(
-										provider
-										.name
-									===	"transfer"
-								)
-						){
-							procedureList
-							.push(
-								(
-									provider
-								)
-							);
-						}
-						else if(
-								(
-										typeof
-										provider
-									==	"function"
-								)
-						){
-							procedureList
-							.push(
-								function transfer( property, value, source, target ){
-									return	(
-												provider(
-													(
-														property
-													),
-
-													(
-														value
-													),
-
-													(
-														source
-													),
-
-													(
-														target
-													)
-												)
-											);
-								}
-							);
-						}
-						else{
-							throw	(
-										new	Error(
-													(
-														[
-															"#cannot-determine-transfer-procedure;",
-
-															"cannot determine transfer procedure;",
-
-															"@parameter-list:",
-															`${ parameterList };`
-														]
-													)
-												)
-									);
-						}
-
-						return	(
+									&&	(
+												provider
+												.length
+											>	0
+										)
+								){
 									procedureList
-								);
-					}
-				),
+									.push(
+										function transfer( property, value, source, target ){
+											(
+													target[ provider ]
+												=	(
+														target[ property ]
+													)
+											);
 
-				(
-					[ ]
+											return	(
+														target
+													);
+										}
+									);
+								}
+								else if(
+										(
+												typeof
+												provider
+											==	"function"
+										)
+
+									&&	(
+												provider
+												.name
+											===	"transfer"
+										)
+								){
+									procedureList
+									.push(
+										(
+											provider
+										)
+									);
+								}
+								else if(
+										(
+												typeof
+												provider
+											==	"function"
+										)
+								){
+									procedureList
+									.push(
+										function transfer( property, value, source, target ){
+											return	(
+														provider(
+															(
+																property
+															),
+
+															(
+																value
+															),
+
+															(
+																source
+															),
+
+															(
+																target
+															)
+														)
+													);
+										}
+									);
+								}
+								else{
+									throw	(
+												new	Error(
+															(
+																[
+																	"#cannot-determine-transfer-procedure;",
+
+																	"cannot determine transfer procedure;",
+
+																	"@parameter-list:",
+																	`${ parameterList };`
+																]
+															)
+														)
+											);
+								}
+
+								return	(
+											procedureList
+										);
+							}
+						),
+
+						(
+							[ ]
+						)
+					)
 				)
-			)
 		);
 
-		target
+		targetList
 		.forEach(
 			(
 				( transferProcedure ) => {
@@ -1962,14 +2096,236 @@ OptionPrototype.transfer = (
 	}
 );
 
-OptionPrototype.flush = (
-	function flush( optionData ){
-		return	(
-					this
+OptionPrototype.detourOption = (
+	function detourOption( sourceProperty, targetList ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
+
+		(
+				targetList
+			=	(
+					parameterList
+					.slice(
+						(
+							1
+						)
+					)
 					.reduce(
 						(
-							( target, provider ) => (
+							( procedureList, provider ) => {
+								if(
+										(
+												typeof
+												provider
+											==	"string"
+										)
+
+									&&	(
+												provider
+												.length
+											>	0
+										)
+								){
+									procedureList
+									.push(
+										function detour( property, value, source, target ){
+											(
+													target[ provider ]
+												=	(
+														target[ property ]
+													)
+											);
+
+											return	(
+														target
+													);
+										}
+									);
+								}
+								else if(
+										(
+												typeof
+												provider
+											==	"function"
+										)
+
+									&&	(
+												provider
+												.name
+											===	"detour"
+										)
+								){
+									procedureList
+									.push(
+										(
+											provider
+										)
+									);
+								}
+								else if(
+										(
+												typeof
+												provider
+											==	"function"
+										)
+								){
+									procedureList
+									.push(
+										function detour( property, value, source, target ){
+											return	(
+														provider(
+															(
+																property
+															),
+
+															(
+																value
+															),
+
+															(
+																source
+															),
+
+															(
+																target
+															)
+														)
+													);
+										}
+									);
+								}
+								else{
+									throw	(
+												new	Error(
+															(
+																[
+																	"#cannot-determine-detour-procedure;",
+
+																	"cannot determine detour procedure;",
+
+																	"@parameter-list:",
+																	`${ parameterList };`
+																]
+															)
+														)
+											);
+								}
+
+								return	(
+											procedureList
+										);
+							}
+						),
+
+						(
+							[ ]
+						)
+					)
+				)
+		);
+
+		targetList
+		.forEach(
+			(
+				( detourProcedure ) => {
+					(
+							detourProcedure
+							.property
+						=	(
+								sourceProperty
+							)
+					);
+
+					this
+					.push(
+						(
+							detourProcedure
+						)
+					);
+				}
+			)
+		);
+
+		return	(
+					this
+				);
+	}
+);
+
+OptionPrototype.flushOption = (
+	function flushOption( optionData ){
+		try{
+			return	(
+						this
+						.reduce(
+							(
+								( target, provider ) => (
+										(
+												(
+														typeof
+														provider
+													==	"function"
+												)
+
+											&&	(
+														provider
+														.name
+													===	"flush"
+												)
+										)
+									?	(
+											provider
+											.bind(
+												(
+													target
+												)
+											)(
+												(
+													optionData
+												)
+											)
+										)
+									:	(
+											target
+										)
+								)
+							),
+
+							(
+								this
+							)
+						)
+					);
+		}
+		catch( error ){
+			throw	(
+						new	Error(
 									(
+										[
+											"#cannot-flush-option;",
+
+											"cannot flush option;",
+
+											"@error-data:",
+											`${ error };`
+										]
+									)
+								)
+					);
+		}
+		finally{
+			while(
+					(
+							source
+							.some(
+								(
+									( provider ) => (
 											(
 													typeof
 													provider
@@ -1982,34 +2338,52 @@ OptionPrototype.flush = (
 												===	"flush"
 											)
 									)
-								?	(
+								)
+							)
+						===	true
+					)
+			){
+				source
+				.forEach(
+					( provider ) => {
+						if(
+								(
+										typeof
 										provider
-										.bind(
-											(
-												target
-											)
-										)(
-											(
-												optionData
-											)
+									==	"function"
+								)
+
+							&&	(
+										provider
+										.name
+									===	"flush"
+								)
+						){
+							source
+							.splice(
+								(
+									source
+									.indexOf(
+										(
+											provider
 										)
 									)
-								:	(
-										target
-									)
-							)
-						),
+								),
 
-						(
-							this
-						)
-					)
+								(
+									1
+								)
+							);
+						}
+					}
 				);
+			}
+		}
 	}
 );
 
-OptionPrototype.clean = (
-	function clean( ){
+OptionPrototype.cleanOption = (
+	function cleanOption( ){
 		while(
 				(
 						this
@@ -2037,7 +2411,7 @@ OptionPrototype.valueOf = (
 						),
 
 						(
-							this[ CONTEXT ]
+							this[ OPTION_CONTEXT ]
 						)
 					)
 				);
