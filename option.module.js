@@ -334,7 +334,7 @@ const Option = (
 
 				this
 				.push(
-					function flush( optionData ){
+					function flush( { target: optionData } ){
 						if(
 								(
 										typeof
@@ -398,9 +398,13 @@ const Option = (
 					)
 			);
 
-			return	(
-						Option
-						.createProxyOption(
+			const	{
+						proxy: option,
+						revoke: revokeOption
+					}
+				=	(
+						Proxy
+						.revocable(
 							(
 								new	Option(
 										(
@@ -411,96 +415,96 @@ const Option = (
 											providerList
 										)
 									)
-							)
-						)
-					);
-		}
-	}
-);
+							),
 
-Option.createProxyOption = (
-	function createProxyOption( optionInstance ){
-		const	{
-					proxy: option,
-					revoke: revokeOption
-				}
-			=	(
-					Proxy
-					.revocable(
-						(
-							optionInstance
-						),
-
-						(
-							{
-								"get": (
-									function get( source, property, target ){
-										if(
-												(
-														Array
-														.prototype
-														.hasOwnProperty(
-															(
-																property
-															)
-														)
-													===	true
-												)
-
-											||	(
-														Object
-														.prototype
-														.hasOwnProperty(
-															(
-																property
-															)
-														)
-													===	true
-												)
-
-											||	(
-														typeof
-														property
-													==	"symbol"
-												)
-										){
+							(
+								{
+									"get": (
+										function get( source, property, target ){
 											if(
 													(
-															typeof
 															Array
-															.prototype[ property ]
-														==	"function"
+															.prototype
+															.hasOwnProperty(
+																(
+																	property
+																)
+															)
+														===	true
+													)
+
+												||	(
+															Object
+															.prototype
+															.hasOwnProperty(
+																(
+																	property
+																)
+															)
+														===	true
+													)
+
+												||	(
+															typeof
+															property
+														==	"symbol"
 													)
 											){
 												if(
 														(
-																property
-															===	"forEach"
-														)
-
-													||	(
-																property
-															===	"push"
+																typeof
+																Array
+																.prototype[ property ]
+															==	"function"
 														)
 												){
-													return	(
-																source[ property ]
-																.bind(
-																	(
-																		{
-																			"source": (
-																				source
-																			),
+													if(
+															(
+																	property
+																===	"forEach"
+															)
 
-																			"target": (
-																				target
-																			)
-																		}
+														||	(
+																	property
+																===	"push"
+															)
+													){
+														return	(
+																	source[ property ]
+																	.bind(
+																		(
+																			{
+																				"source": (
+																					source
+																				),
+
+																				"target": (
+																					target
+																				)
+																			}
+																		)
 																	)
-																)
-															);
+																);
+													}
+													else{
+														return	(
+																	source[ property ]
+																	.bind(
+																		(
+																			source
+																		)
+																	)
+																);
+													}
 												}
-												else{
+												else if(
+														(
+																typeof
+																Object
+																.prototype[ property ]
+															==	"function"
+														)
+												){
 													return	(
 																source[ property ]
 																.bind(
@@ -510,49 +514,366 @@ Option.createProxyOption = (
 																)
 															);
 												}
+												else{
+													return	(
+																source[ property ]
+															);
+												}
 											}
-											else if(
-													(
-															typeof
-															Object
-															.prototype[ property ]
-														==	"function"
-													)
+
+											if(
+														(
+																typeof
+																source[ property ]
+															==	"function"
+														)
 											){
 												return	(
 															source[ property ]
 															.bind(
 																(
-																	source
+																	target
 																)
 															)
 														);
 											}
-											else{
-												return	(
-															source[ property ]
-														);
-											}
-										}
 
-										if(
-													(
-															typeof
-															source[ property ]
-														==	"function"
-													)
-										){
-											return	(
-														source[ property ]
-														.bind(
+											try{
+												if(
+														(
+																source
+																.some(
+																	(
+																		( provider ) => (
+																				(
+																						typeof
+																						provider
+																					==	"function"
+																				)
+
+																			&&	(
+																						provider
+																						.name
+																					===	"transform"
+																				)
+
+																			&&	(
+																						provider
+																						.property
+																					===	property
+																				)
+																		)
+																	)
+																)
+															===	true
+														)
+												){
+													const sourceContext = (
+														Object
+														.assign(
 															(
-																target
+																{ }
+															),
+
+															(
+																source[ OPTION_CONTEXT ]
 															)
 														)
 													);
-										}
 
-										try{
+													return	(
+																source
+																.reduce(
+																	(
+																		( value, provider ) => (
+																				(
+																						(
+																								typeof
+																								provider
+																							==	"function"
+																						)
+
+																					&&	(
+																								provider
+																								.name
+																							===	"transform"
+																						)
+
+																					&&	(
+																								provider
+																								.property
+																							===	property
+																						)
+																				)
+																			?	(
+																					provider(
+																						(
+																							{
+																								property: property,
+																								value: value,
+																								source: sourceContext,
+																								target: target
+																							}
+																						)
+																					)
+																				)
+																			:	(
+																					value
+																				)
+																		)
+																	),
+
+																	(
+																		source[ OPTION_CONTEXT ][ property ]
+																	)
+																)
+															);
+												}
+
+												(
+														source[ OPTION_CONTEXT ][ property ]
+													=	(
+															source
+															.reduce(
+																(
+																	( value, provider, index ) => (
+																			(
+																					(
+																							typeof
+																							provider
+																						==	"function"
+																					)
+
+																				&&	(
+																							provider
+																							.name
+																						===	"resolve"
+																					)
+																			)
+																		?	(
+																				provider(
+																					(
+																						{
+																							property: property,
+																							value: value
+																						}
+																					)
+																				)
+																			)
+																		:	(
+																				value
+																			)
+																	)
+																),
+
+																(
+																	source[ OPTION_CONTEXT ][ property ]
+																)
+															)
+														)
+												);
+
+												const value = (
+													source
+													.reduce(
+														(
+															( value, provider ) => (
+																	(
+																			(
+																					typeof
+																					provider
+																				==	"function"
+																			)
+
+																		&&	(
+																					provider
+																					.name
+																				===	"format"
+																			)
+																	)
+																?	(
+																		provider(
+																			(
+																				{
+																					property: property,
+																					value: value
+																				}
+																			)
+																		)
+																	)
+																:	(
+																		value
+																	)
+															)
+														),
+
+														(
+															source[ OPTION_CONTEXT ][ property ]
+														)
+													)
+												);
+
+												return	(
+															value
+														);
+											}
+											catch( error ){
+												throw	(
+															new	Error(
+																		(
+																			[
+																				"#cannot-get-option-property;",
+
+																				"cannot get option property;",
+
+																				"@error-data:",
+																				`${ error };`
+																			]
+																		)
+																	)
+														);
+											}
+											finally{
+												while(
+														(
+																source
+																.some(
+																	(
+																		( provider ) => (
+																				(
+																						typeof
+																						provider
+																					==	"function"
+																				)
+
+																			&&	(
+																						(
+																								provider
+																								.name
+																							===	"resolve"
+																						)
+
+																					||	(
+																								provider
+																								.name
+																							===	"format"
+																						)
+																				)
+																		)
+																	)
+																)
+															===	true
+														)
+												){
+													source
+													.forEach(
+														( provider ) => {
+															if(
+																	(
+																			typeof
+																			provider
+																		==	"function"
+																	)
+
+																&&	(
+																			(
+																					provider
+																					.name
+																				===	"resolve"
+																			)
+
+																		||	(
+																					provider
+																					.name
+																				===	"format"
+																			)
+																	)
+															){
+																source
+																.splice(
+																	(
+																		source
+																		.indexOf(
+																			(
+																				provider
+																			)
+																		)
+																	),
+
+																	(
+																		1
+																	)
+																);
+															}
+														}
+													);
+												}
+											}
+										}
+									),
+
+									"set": (
+										function set( source, property, value, target ){
+											if(
+													(
+															Array
+															.prototype
+															.hasOwnProperty(
+																(
+																	property
+																)
+															)
+														===	true
+													)
+
+												||	(
+															Object
+															.prototype
+															.hasOwnProperty(
+																(
+																	property
+																)
+															)
+														===	true
+													)
+
+												||	(
+															typeof
+															property
+														==	"symbol"
+													)
+											){
+												(
+														source[ property ]
+													=	(
+															value
+														)
+												);
+
+												return	(
+															true
+														);
+											}
+
+											if(
+													(
+															(
+																	property
+																in	source[ OPTION_CONTEXT ]
+															)
+														===	true
+													)
+
+												&&	(
+															source[ OPTION_CONTEXT ][ property ]
+														===	value
+													)
+											){
+												return	(
+															true
+														);
+											}
+
 											if(
 													(
 															source
@@ -568,7 +889,7 @@ Option.createProxyOption = (
 																		&&	(
 																					provider
 																					.name
-																				===	"transform"
+																				===	"detour"
 																			)
 
 																		&&	(
@@ -595,169 +916,93 @@ Option.createProxyOption = (
 													)
 												);
 
-												return	(
-															source
-															.reduce(
-																(
-																	( value, provider ) => (
-																			(
-																					(
-																							typeof
-																							provider
-																						==	"function"
-																					)
-
-																				&&	(
-																							provider
-																							.name
-																						===	"transform"
-																					)
-
-																				&&	(
-																							provider
-																							.property
-																						===	property
-																					)
-																			)
-																		?	(
-																				provider(
-																					(
-																						property
-																					),
-
-																					(
-																						value
-																					),
-
-																					(
-																						sourceContext
-																					),
-
-																					(
-																						target
-																					)
-																				)
-																			)
-																		:	(
-																				value
-																			)
+												source
+												.forEach(
+													(
+														( provider ) => {
+															if(
+																	(
+																			typeof
+																			provider
+																		==	"function"
 																	)
-																),
 
-																(
-																	source[ OPTION_CONTEXT ][ property ]
-																)
-															)
+																&&	(
+																			provider
+																			.name
+																		===	"detour"
+																	)
+
+																&&	(
+																			provider
+																			.property
+																		===	property
+																	)
+															){
+																provider(
+																	(
+																		{
+																			property: property,
+																			value: value,
+																			source: sourceContext,
+																			target: target
+																		}
+																	)
+																);
+															}
+														}
+													)
+												);
+
+												return	(
+															true
 														);
 											}
 
 											(
 													source[ OPTION_CONTEXT ][ property ]
 												=	(
-														source
-														.reduce(
-															(
-																( value, provider, index ) => (
-																		(
-																				(
-																						typeof
-																						provider
-																					==	"function"
-																				)
-
-																			&&	(
-																						provider
-																						.name
-																					===	"resolve"
-																				)
-																		)
-																	?	(
-																			provider(
-																				(
-																					property
-																				),
-
-																				(
-																					value
-																				)
-																			)
-																		)
-																	:	(
-																			value
-																		)
-																)
-															),
-
-															(
-																source[ OPTION_CONTEXT ][ property ]
-															)
-														)
-													)
-											);
-
-											const value = (
-												source
-												.reduce(
-													(
-														( value, provider ) => (
-																(
-																		(
-																				typeof
-																				provider
-																			==	"function"
-																		)
-
-																	&&	(
-																				provider
-																				.name
-																			===	"format"
-																		)
-																)
-															?	(
-																	provider(
-																		(
-																			property
-																		),
-
-																		(
-																			value
-																		)
-																	)
-																)
-															:	(
-																	value
-																)
-														)
-													),
-
-													(
-														source[ OPTION_CONTEXT ][ property ]
-													)
-												)
-											);
-
-											return	(
 														value
-													);
-										}
-										catch( error ){
-											throw	(
-														new	Error(
-																	(
-																		[
-																			"#cannot-get-option-property;",
+													)
+											);
 
-																			"cannot get option property;",
+											source
+											.push(
+												function flush( { target: optionData } ){
+													if(
+															(
+																	typeof
+																	optionData
+																==	"object"
+															)
 
-																			"@error-data:",
-																			`${ error };`
-																		]
-																	)
+														&&	(
+																	optionData
+																!==	null
+															)
+													){
+														(
+																optionData[ property ]
+															=	(
+																	source[ OPTION_CONTEXT ][ property ]
 																)
+														);
+													}
+
+													(
+															source[ OPTION_CONTEXT ][ property ]
+														=	(
+																undefined
+															)
 													);
-										}
-										finally{
-											while(
+
+													return	(
+																this
+															);
+												}
+											);
+
+											if(
 													(
 															source
 															.some(
@@ -770,17 +1015,15 @@ Option.createProxyOption = (
 																			)
 
 																		&&	(
-																					(
-																							provider
-																							.name
-																						===	"resolve"
-																					)
+																					provider
+																					.name
+																				===	"transfer"
+																			)
 
-																				||	(
-																							provider
-																							.name
-																						===	"format"
-																					)
+																		&&	(
+																					provider
+																					.property
+																				===	property
 																			)
 																	)
 																)
@@ -788,346 +1031,75 @@ Option.createProxyOption = (
 														===	true
 													)
 											){
+												const sourceContext = (
+													Object
+													.assign(
+														(
+															{ }
+														),
+
+														(
+															source[ OPTION_CONTEXT ]
+														)
+													)
+												);
+
 												source
 												.forEach(
-													( provider ) => {
-														if(
-																(
-																		typeof
-																		provider
-																	==	"function"
-																)
-
-															&&	(
-																		(
-																				provider
-																				.name
-																			===	"resolve"
-																		)
-
-																	||	(
-																				provider
-																				.name
-																			===	"format"
-																		)
-																)
-														){
-															source
-															.splice(
-																(
-																	source
-																	.indexOf(
-																		(
+													(
+														( provider ) => {
+															if(
+																	(
+																			typeof
 																			provider
-																		)
+																		==	"function"
 																	)
-																),
 
-																(
-																	1
-																)
-															);
+																&&	(
+																			provider
+																			.name
+																		===	"transfer"
+																	)
+
+																&&	(
+																			provider
+																			.property
+																		===	property
+																	)
+															){
+																provider(
+																	(
+																		{
+																			property: property,
+																			value: value,
+																			source: sourceContext,
+																			target: target
+																		}
+																	)
+																);
+															}
 														}
-													}
+													)
 												);
 											}
-										}
-									}
-								),
-
-								"set": (
-									function set( source, property, value, target ){
-										if(
-												(
-														Array
-														.prototype
-														.hasOwnProperty(
-															(
-																property
-															)
-														)
-													===	true
-												)
-
-											||	(
-														Object
-														.prototype
-														.hasOwnProperty(
-															(
-																property
-															)
-														)
-													===	true
-												)
-
-											||	(
-														typeof
-														property
-													==	"symbol"
-												)
-										){
-											(
-													source[ property ]
-												=	(
-														value
-													)
-											);
 
 											return	(
 														true
 													);
 										}
-
-										if(
-												(
-														source[ OPTION_CONTEXT ][ property ]
-													!==	value
-												)
-										){
-											return	(
-														true
-													);
-										}
-
-										if(
-												(
-														source
-														.some(
-															(
-																( provider ) => (
-																		(
-																				typeof
-																				provider
-																			==	"function"
-																		)
-
-																	&&	(
-																				provider
-																				.name
-																			===	"detour"
-																		)
-
-																	&&	(
-																				provider
-																				.property
-																			===	property
-																		)
-																)
-															)
-														)
-													===	true
-												)
-										){
-											const sourceContext = (
-												Object
-												.assign(
-													(
-														{ }
-													),
-
-													(
-														source[ OPTION_CONTEXT ]
-													)
-												)
-											);
-
-											source
-											.forEach(
-												(
-													( provider ) => {
-														if(
-																(
-																		typeof
-																		provider
-																	==	"function"
-																)
-
-															&&	(
-																		provider
-																		.name
-																	===	"detour"
-																)
-
-															&&	(
-																		provider
-																		.property
-																	===	property
-																)
-														){
-															provider(
-																(
-																	property
-																),
-
-																(
-																	value
-																),
-
-																(
-																	sourceContext
-																),
-
-																(
-																	target
-																)
-															);
-														}
-													}
-												)
-											);
-
-											return	(
-														true
-													);
-										}
-
-										(
-												source[ OPTION_CONTEXT ][ property ]
-											=	(
-													value
-												)
-										);
-
-										source
-										.push(
-											function flush( optionData ){
-												if(
-														(
-																typeof
-																optionData
-															==	"object"
-														)
-
-													&&	(
-																optionData
-															!==	null
-														)
-												){
-													(
-															optionData[ property ]
-														=	(
-																source[ OPTION_CONTEXT ][ property ]
-															)
-													);
-												}
-
-												(
-														source[ OPTION_CONTEXT ][ property ]
-													=	(
-															undefined
-														)
-												);
-
-												return	(
-															this
-														);
-											}
-										);
-
-										if(
-												(
-														source
-														.some(
-															(
-																( provider ) => (
-																		(
-																				typeof
-																				provider
-																			==	"function"
-																		)
-
-																	&&	(
-																				provider
-																				.name
-																			===	"transfer"
-																		)
-
-																	&&	(
-																				provider
-																				.property
-																			===	property
-																		)
-																)
-															)
-														)
-													===	true
-												)
-										){
-											const sourceContext = (
-												Object
-												.assign(
-													(
-														{ }
-													),
-
-													(
-														source[ OPTION_CONTEXT ]
-													)
-												)
-											);
-
-											source
-											.forEach(
-												(
-													( provider ) => {
-														if(
-																(
-																		typeof
-																		provider
-																	==	"function"
-																)
-
-															&&	(
-																		provider
-																		.name
-																	===	"transfer"
-																)
-
-															&&	(
-																		provider
-																		.property
-																	===	property
-																)
-														){
-															provider(
-																(
-																	property
-																),
-
-																(
-																	value
-																),
-
-																(
-																	sourceContext
-																),
-
-																(
-																	target
-																)
-															);
-														}
-													}
-												)
-											);
-										}
-
-										return	(
-													true
-												);
-									}
-								)
-							}
+									)
+								}
+							)
 						)
-					)
-				);
+					);
 
-		return	(
-					{
-						"option": option,
-						"revokeOption": revokeOption
-					}
-				);
+			return	(
+						{
+							"option": option,
+							"revokeOption": revokeOption
+						}
+					);
+		}
 	}
 );
 
@@ -1398,15 +1370,14 @@ OptionPrototype.formatOption = (
 
 			this
 			.push(
-				function format( property, value ){
+				function format( { property, value } ){
 					return	(
 								formatProcedure(
 									(
-										property
-									),
-
-									(
-										value
+										{
+											property: property,
+											value: value
+										}
 									)
 								)
 							);
@@ -1455,15 +1426,14 @@ OptionPrototype.formatOption = (
 			){
 				this
 				.push(
-					function format( property, value ){
+					function format( { property, value } ){
 						return	(
 									formatProcedure(
 										(
-											property
-										),
-
-										(
-											value
+											{
+												property: property,
+												value: value
+											}
 										)
 									)
 								);
@@ -1584,15 +1554,14 @@ OptionPrototype.resolveOption = (
 
 			this
 			.push(
-				function resolve( property, value ){
+				function resolve( { property, value } ){
 					return	(
 								resolveProcedure(
 									(
-										property
-									),
-
-									(
-										value
+										{
+											property: property,
+											value: value
+										}
 									)
 								)
 							);
@@ -1641,15 +1610,14 @@ OptionPrototype.resolveOption = (
 			){
 				this
 				.push(
-					function resolve( property, value ){
+					function resolve( { property, value } ){
 						return	(
 									resolveProcedure(
 										(
-											property
-										),
-
-										(
-											value
+											{
+												property: property,
+												value: value
+											}
 										)
 									)
 								);
@@ -1879,7 +1847,7 @@ OptionPrototype.transformOption = (
 		);
 
 		const transformProcedure = (
-			function transform( property, value, source, target ){
+			function transform( { property, value, source, target } ){
 				return	(
 							flowList
 							.reduce(
@@ -1887,19 +1855,12 @@ OptionPrototype.transformOption = (
 									( value, procedure ) => (
 										procedure(
 											(
-												property
-											),
-
-											(
-												value
-											),
-
-											(
-												source
-											),
-
-											(
-												target
+												{
+													property: property,
+													value: value,
+													source: source,
+													target: target
+												}
 											)
 										)
 									)
@@ -1972,7 +1933,7 @@ OptionPrototype.transferOption = (
 								){
 									procedureList
 									.push(
-										function transfer( property, value, source, target ){
+										function transfer( { property, value, source, target } ){
 											(
 													target[ provider ]
 												=	(
@@ -2015,23 +1976,16 @@ OptionPrototype.transferOption = (
 								){
 									procedureList
 									.push(
-										function transfer( property, value, source, target ){
+										function transfer( { property, value, source, target } ){
 											return	(
 														provider(
 															(
-																property
-															),
-
-															(
-																value
-															),
-
-															(
-																source
-															),
-
-															(
-																target
+																{
+																	property: property,
+																	value: value,
+																	source: source,
+																	target: target
+																}
 															)
 														)
 													);
@@ -2134,7 +2088,7 @@ OptionPrototype.detourOption = (
 								){
 									procedureList
 									.push(
-										function detour( property, value, source, target ){
+										function detour( { property, value, source, target } ){
 											(
 													target[ provider ]
 												=	(
@@ -2177,23 +2131,16 @@ OptionPrototype.detourOption = (
 								){
 									procedureList
 									.push(
-										function detour( property, value, source, target ){
+										function detour( { property, value, source, target } ){
 											return	(
 														provider(
 															(
-																property
-															),
-
-															(
-																value
-															),
-
-															(
-																source
-															),
-
-															(
-																target
+																{
+																	property: property,
+																	value: value,
+																	source: source,
+																	target: target
+																}
 															)
 														)
 													);
@@ -2287,7 +2234,9 @@ OptionPrototype.flushOption = (
 												)
 											)(
 												(
-													optionData
+													{
+														target: optionData
+													}
 												)
 											)
 										)
