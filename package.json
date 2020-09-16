@@ -1,15 +1,16 @@
 {
 	"name": "@volkovasystem/option",
 	"alias": "option",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "Option class interface for procedure parameter.",
 	"main": "option.js",
 	"scripts": {
-		"clean": "rm -rfv ./node_modules || true && rm -fv ./package-lock.json || true && npm cache clean --force",
-		"reset": "npm run clean && rm -rfv ./option.js || true && rm -rfv ./.build || true",
-		"bundle": "npx parcel build ./*.module.js --no-cache --no-source-maps --no-minify --out-dir ./.build --out-file ./option.js --global Option && mv ./.build/option.js ./option.js && rm -rfv ./.build || true",
-		"compress": "npx terser ./option.js --compress --output ./option.js",
-		"build": "npm run bundle && npm run compress",
+		"clean": "rm -rf ./node_modules || true && rm -fv ./package-lock.json || true && npm cache clean --force",
+		"reset": "npm run clean && rm -rfv ./option.js || true && rm -rfv ./.build || true && rm -rfv ./.test || true",
+		"bundle": "npx parcel build ./*.module.js --no-cache --no-source-maps --no-minify --out-dir ./.build --out-file ./option.bundle.js --global Option",
+		"compress": "npx terser ./.build/option.bundle.js --compress --keep-classnames --keep-fnames --output ./.build/option.js",
+		"resolve": "mv ./.build/option.js ./option.js && rm -rfv ./.build || true",
+		"build": "npm run bundle && npm run compress && npm run resolve",
 		"test": "node ./option.test.js",
 		"stage": "npm run reset && npm install && npm run build && npm test && npm run clean",
 		"prepublishOnly": "npm run stage"
