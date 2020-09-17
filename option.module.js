@@ -320,54 +320,55 @@ const Option = (
 				)
 			);
 
-			for(
-				let	property
-				in	contextData
-			){
-				let value = (
-					contextData[ property ]
-				);
+			Object
+			.keys(
+				(
+					contextData
+				)
+			)
+			.forEach(
+				(
+					( property ) => {
+						this
+						.push(
+							function flush( { target: contextData } ){
+								if(
+										(
+												typeof
+												contextData
+											==	"object"
+										)
 
-				const self = (
-					this
-				);
+									&&	(
+												contextData
+											!==	null
+										)
+								){
+									(
+											contextData[ property ]
+										=	(
+												this
+												.getContext( )[ property ]
+											)
+									);
+								}
 
-				this
-				.push(
-					function flush( { target: contextData } ){
-						if(
 								(
-										typeof
-										contextData
-									==	"object"
-								)
-
-							&&	(
-										contextData
-									!==	null
-								)
-						){
-							(
-									contextData[ property ]
-								=	(
-										self[ OPTION_CONTEXT ][ property ]
-									)
-							);
-						}
-
-						(
-								self[ OPTION_CONTEXT ][ property ]
-							=	(
-									undefined
-								)
-						);
-
-						return	(
-									this
+										this
+										.getContext( )[ property ]
+									=	(
+											undefined
+										)
 								);
+
+								return	(
+											this
+										);
+							}
+						);
 					}
-				);
-			}
+				)
+			);
 
 			return	(
 						this
@@ -576,7 +577,8 @@ const Option = (
 															),
 
 															(
-																source[ OPTION_CONTEXT ]
+																source
+																.getContext( )
 															)
 														)
 													);
@@ -609,10 +611,21 @@ const Option = (
 																					provider(
 																						(
 																							{
-																								property: property,
-																								value: value,
-																								source: sourceContext,
-																								target: target
+																								"property": (
+																									property
+																								),
+
+																								"value": (
+																									value
+																								),
+
+																								"source": (
+																									sourceContext
+																								),
+
+																								"target": (
+																									target
+																								)
 																							}
 																						)
 																					)
@@ -624,14 +637,16 @@ const Option = (
 																	),
 
 																	(
-																		source[ OPTION_CONTEXT ][ property ]
+																		source
+																		.getContext( )[ property ]
 																	)
 																)
 															);
 												}
 
 												(
-														source[ OPTION_CONTEXT ][ property ]
+														source
+														.getContext( )[ property ]
 													=	(
 															source
 															.reduce(
@@ -654,8 +669,13 @@ const Option = (
 																				provider(
 																					(
 																						{
-																							property: property,
-																							value: value
+																							"property": (
+																								property
+																							),
+
+																							"value": (
+																								value
+																							)
 																						}
 																					)
 																				)
@@ -667,7 +687,8 @@ const Option = (
 																),
 
 																(
-																	source[ OPTION_CONTEXT ][ property ]
+																	source
+																	.getContext( )[ property ]
 																)
 															)
 														)
@@ -695,8 +716,13 @@ const Option = (
 																		provider(
 																			(
 																				{
-																					property: property,
-																					value: value
+																					"property": (
+																						property
+																					),
+
+																					"value": (
+																						value
+																					)
 																				}
 																			)
 																		)
@@ -708,7 +734,8 @@ const Option = (
 														),
 
 														(
-															source[ OPTION_CONTEXT ][ property ]
+															source
+															.getContext( )[ property ]
 														)
 													)
 												);
@@ -859,13 +886,19 @@ const Option = (
 													(
 															(
 																	property
-																in	source[ OPTION_CONTEXT ]
+																in	(
+																		source
+																		.getContext( )
+																	)
 															)
 														===	true
 													)
 
 												&&	(
-															source[ OPTION_CONTEXT ][ property ]
+															(
+																source
+																.getContext( )[ property ]
+															)
 														===	value
 													)
 											){
@@ -911,7 +944,8 @@ const Option = (
 														),
 
 														(
-															source[ OPTION_CONTEXT ]
+															source
+															.getContext( )
 														)
 													)
 												);
@@ -942,10 +976,21 @@ const Option = (
 																provider(
 																	(
 																		{
-																			property: property,
-																			value: value,
-																			source: sourceContext,
-																			target: target
+																			"property": (
+																				property
+																			),
+
+																			"value": (
+																				value
+																			),
+
+																			"source": (
+																				sourceContext
+																			),
+
+																			"target": (
+																				target
+																			)
 																		}
 																	)
 																);
@@ -960,7 +1005,8 @@ const Option = (
 											}
 
 											(
-													source[ OPTION_CONTEXT ][ property ]
+													source
+													.getContext( )[ property ]
 												=	(
 														value
 													)
@@ -984,13 +1030,15 @@ const Option = (
 														(
 																contextData[ property ]
 															=	(
-																	source[ OPTION_CONTEXT ][ property ]
+																	source
+																	.getContext( )[ property ]
 																)
 														);
 													}
 
 													(
-															source[ OPTION_CONTEXT ][ property ]
+															source
+															.getContext( )[ property ]
 														=	(
 																undefined
 															)
@@ -1039,7 +1087,8 @@ const Option = (
 														),
 
 														(
-															source[ OPTION_CONTEXT ]
+															source
+															.getContext( )
 														)
 													)
 												);
@@ -1070,10 +1119,21 @@ const Option = (
 																provider(
 																	(
 																		{
-																			property: property,
-																			value: value,
-																			source: sourceContext,
-																			target: target
+																			"property": (
+																				property
+																			),
+
+																			"value": (
+																				value
+																			),
+
+																			"source": (
+																				sourceContext
+																			),
+
+																			"target": (
+																				target
+																			)
 																		}
 																	)
 																);
@@ -1166,7 +1226,7 @@ OptionPrototype.forEach = (
 );
 
 OptionPrototype.push = (
-	function push( ){
+	function push( providerList ){
 		const parameterList = (
 			Array
 			.from(
@@ -1198,6 +1258,42 @@ OptionPrototype.push = (
 				)
 		);
 
+		(
+				providerList
+			=	(
+					parameterList
+					.map(
+						(
+							( provider ) => (
+									(
+											(
+													typeof
+													provider
+												==	"object"
+											)
+
+										||	(
+													typeof
+													provider
+												!=	"function"
+											)
+									)
+								?	(
+										function data( { property, value, source, target } ){
+											return	(
+														provider
+													);
+										}
+									)
+								:	(
+										provider
+									)
+							)
+						)
+					)
+				)
+		);
+
 		Array
 		.prototype
 		.push
@@ -1207,36 +1303,7 @@ OptionPrototype.push = (
 			),
 
 			(
-				parameterList
-				.map(
-					(
-						( parameter ) => (
-								(
-										(
-												typeof
-												parameter
-											==	"object"
-										)
-
-									||	(
-												typeof
-												parameter
-											!=	"function"
-										)
-								)
-							?	(
-									function data( ){
-										return	(
-													parameter
-												);
-									}
-								)
-							:	(
-									parameter
-								)
-						)
-					)
-				)
+				providerList
 			)
 		);
 
@@ -1260,7 +1327,8 @@ OptionPrototype.getEffect = (
 					Object
 					.keys(
 						(
-							this[ OPTION_CONTEXT ]
+							this
+							.getContext( )
 						)
 					)
 					.reduce(
@@ -1289,7 +1357,10 @@ OptionPrototype.checkOption = (
 		return	(
 						(
 								property
-							in	this[ OPTION_CONTEXT ]
+							in	(
+									this
+									.getContext( )
+								)
 						)
 					===	true
 				);
@@ -1375,8 +1446,13 @@ OptionPrototype.formatOption = (
 								formatProcedure(
 									(
 										{
-											property: property,
-											value: value
+											"property": (
+												property
+											),
+
+											"value": (
+												value
+											)
 										}
 									)
 								)
@@ -1431,8 +1507,13 @@ OptionPrototype.formatOption = (
 									formatProcedure(
 										(
 											{
-												property: property,
-												value: value
+												"property": (
+													property
+												),
+
+												"value": (
+													value
+												)
 											}
 										)
 									)
@@ -1559,8 +1640,13 @@ OptionPrototype.resolveOption = (
 								resolveProcedure(
 									(
 										{
-											property: property,
-											value: value
+											"property": (
+												property
+											),
+
+											"value": (
+												value
+											)
 										}
 									)
 								)
@@ -1615,8 +1701,13 @@ OptionPrototype.resolveOption = (
 									resolveProcedure(
 										(
 											{
-												property: property,
-												value: value
+												"property": (
+													property
+												),
+
+												"value": (
+													value
+												)
 											}
 										)
 									)
@@ -1856,10 +1947,21 @@ OptionPrototype.transformOption = (
 										procedure(
 											(
 												{
-													property: property,
-													value: value,
-													source: source,
-													target: target
+													"property": (
+														property
+													),
+
+													"value": (
+														value
+													),
+
+													"source": (
+														source
+													),
+
+													"target": (
+														target
+													)
 												}
 											)
 										)
@@ -1981,10 +2083,21 @@ OptionPrototype.transferOption = (
 														provider(
 															(
 																{
-																	property: property,
-																	value: value,
-																	source: source,
-																	target: target
+																	"property": (
+																		property
+																	),
+
+																	"value": (
+																		value
+																	),
+
+																	"source": (
+																		source
+																	),
+
+																	"target": (
+																		target
+																	)
 																}
 															)
 														)
@@ -2136,10 +2249,21 @@ OptionPrototype.detourOption = (
 														provider(
 															(
 																{
-																	property: property,
-																	value: value,
-																	source: source,
-																	target: target
+																	"property": (
+																		property
+																	),
+
+																	"value": (
+																		value
+																	),
+
+																	"source": (
+																		source
+																	),
+
+																	"target": (
+																		target
+																	)
 																}
 															)
 														)
@@ -2235,7 +2359,9 @@ OptionPrototype.flushOption = (
 											)(
 												(
 													{
-														target: contextData
+														"target": (
+															contextData
+														)
 													}
 												)
 											)
@@ -2360,7 +2486,8 @@ OptionPrototype.valueOf = (
 						),
 
 						(
-							this[ OPTION_CONTEXT ]
+							this
+							.getContext( )
 						)
 					)
 				);
