@@ -1,7 +1,7 @@
 {
 	"name": "@volkovasystem/option",
 	"alias": "option",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"description": "Option class interface for procedure parameter.",
 	"main": "option.js",
 	"scripts": {
