@@ -2092,7 +2092,7 @@ OptionPrototype.detourOption = (
 											(
 													target[ provider ]
 												=	(
-														target[ property ]
+														value
 													)
 											);
 
