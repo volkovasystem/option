@@ -367,436 +367,857 @@ const Option = (
 );
 
 const TEST_OPTION_INSTANCE = (
-	async	function TEST_OPTION_INSTANCE( ){
+	function TEST_OPTION_INSTANCE( ){
+		try{
+			const actualValue = (
+					(
+									Option( )
+									.option
+						instanceof	Option
+					)
+				===	true
+			);
+
+			const testValue = (
+				true
+			);
+
+			strictAssert
+			.equal(
 				(
-					await	CLEAN_TEST_DIRECTORY( )
-				);
+					actualValue
+				),
 
 				(
-					await	SETUP_TEST_DIRECTORY( )
-				);
+					testValue
+				),
 
-				try{
-					const actualValue = (
-							(
-											Option( ).option
-								instanceof	Option
-							)
-						===	true
-					);
+				(
+					[
+						"#test-option-instance;",
 
-					const testValue = (
+						"test option instance;",
+
+						`must assert to, ${ testValue };`
+					]
+				)
+			);
+
+			return	(
 						true
 					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
 
-					strictAssert
-					.equal(
-						(
-							actualValue
-						),
-
-						(
-							testValue
-						),
-
-						(
-							[
-								"#test-option-instance;",
-
-								"test option instance;",
-
-								`must return, ${ testValue };`
-							]
-						)
+			return	(
+						false
 					);
-
-					return	(
-								true
-							);
-				}
-				catch( error ){
-					console
-					.error(
-						(
-							error
-						)
-					);
-
-					return	(
-								false
-							);
-				}
-				finally{
-					(
-						await	CLEAN_TEST_DIRECTORY( )
-					);
-				}
-			}
+		}
+	}
 );
 
 const TEST_SET_GET_OPTION_ON_UNDEFINED_CONTEXT = (
-	async	function TEST_SET_GET_OPTION_ON_UNDEFINED_CONTEXT( ){
-				(
-					await	CLEAN_TEST_DIRECTORY( )
-				);
+	function TEST_SET_GET_OPTION_ON_UNDEFINED_CONTEXT( ){
+		try{
+			const option = (
+				Option( )
+				.option
+			);
 
-				(
-					await	SETUP_TEST_DIRECTORY( )
-				);
-
-				try{
-					const option = (
-						Option( )
-						.option
-					);
-
-					(
-							option
-							.hello
-						=	(
-								"world"
-							)
-					);
-
-					const actualValue = (
-						option
-						.hello
-					);
-
-					const testValue = (
+			(
+					option
+					.hello
+				=	(
 						"world"
+					)
+			);
+
+			const actualValue = (
+				option
+				.hello
+			);
+
+			const testValue = (
+				"world"
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-set-get-option-on-undefined-context;",
+
+						"test set get option on undefined context;",
+
+						`must be equal, ${ actualValue }, ${ testValue };`
+					]
+				)
+			);
+
+			return	(
+						true
 					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
 
-					strictAssert
-					.equal(
-						(
-							actualValue
-						),
-
-						(
-							testValue
-						),
-
-						(
-							[
-								"#test-set-get-option-on-undefined-context;",
-
-								"test set get option on undefined context;",
-
-								`must be equal, ${ actualValue }, ${ testValue };`
-							]
-						)
+			return	(
+						false
 					);
-
-					return	(
-								true
-							);
-				}
-				catch( error ){
-					console
-					.error(
-						(
-							error
-						)
-					);
-
-					return	(
-								false
-							);
-				}
-				finally{
-					(
-						await	CLEAN_TEST_DIRECTORY( )
-					);
-				}
-			}
+		}
+	}
 );
 
 const TEST_SET_GET_OPTION_WITH_CONTEXT = (
-	async	function TEST_SET_GET_OPTION_WITH_CONTEXT( ){
-				(
-					await	CLEAN_TEST_DIRECTORY( )
-				);
-
-				(
-					await	SETUP_TEST_DIRECTORY( )
-				);
-
-				try{
-					const option = (
-						Option(
-							(
-								{
-									"hello": (
-										"world"
-									)
-								}
-							)
-						)
-						.option
-					);
-
+	function TEST_SET_GET_OPTION_WITH_CONTEXT( ){
+		try{
+			const option = (
+				Option(
 					(
-							option
-							.hello
-						=	(
-								"mundo"
+						{
+							"hello": (
+								"world"
 							)
-					);
+						}
+					)
+				)
+				.option
+			);
 
-					const actualValue = (
-						option
-						.hello
-					);
-
-					const testValue = (
+			(
+					option
+					.hello
+				=	(
 						"mundo"
+					)
+			);
+
+			const actualValue = (
+				option
+				.hello
+			);
+
+			const testValue = (
+				"mundo"
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-set-get-option-with-context;",
+
+						"test set get option on undefined context;",
+
+						`must be equal, ${ actualValue }, ${ testValue };`
+					]
+				)
+			);
+
+			return	(
+						true
 					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
 
-					strictAssert
-					.equal(
-						(
-							actualValue
-						),
-
-						(
-							testValue
-						),
-
-						(
-							[
-								"#test-set-get-option-with-context;",
-
-								"test set get option on undefined context;",
-
-								`must be equal, ${ actualValue }, ${ testValue };`
-							]
-						)
+			return	(
+						false
 					);
-
-					return	(
-								true
-							);
-				}
-				catch( error ){
-					console
-					.error(
-						(
-							error
-						)
-					);
-
-					return	(
-								false
-							);
-				}
-				finally{
-					(
-						await	CLEAN_TEST_DIRECTORY( )
-					);
-				}
-			}
+		}
+	}
 );
 
 const TEST_BASIC_FORMAT_OPTION = (
-	async	function TEST_BASIC_FORMAT_OPTION( ){
-				(
-					await	CLEAN_TEST_DIRECTORY( )
-				);
-
-				(
-					await	SETUP_TEST_DIRECTORY( )
-				);
-
-				try{
-					const option = (
-						Option(
-							(
-								{
-									"hello": (
-										"world"
-									)
-								}
-							)
-						)
-						.option
-					);
-
-					option
-					.formatOption(
-						(
-							( { property, value } ) => (
-									(
-											(
-													property
-												===	"hello"
-											)
-									)
-								?	(
-										value
-										.toUpperCase( )
-									)
-								:	(
-										value
-									)
-							)
-						)
-					);
-
-					const actualValue = (
-						option
-						.hello
-					);
-
-					const testValue = (
-						"WORLD"
-					);
-
-					strictAssert
-					.equal(
-						(
-							actualValue
-						),
-
-						(
-							testValue
-						),
-
-						(
-							[
-								"#test-basic-format-option;",
-
-								"test basic format option;",
-
-								`must be equal, ${ actualValue }, ${ testValue };`
-							]
-						)
-					);
-
-					return	(
-								true
-							);
-				}
-				catch( error ){
-					console
-					.error(
-						(
-							error
-						)
-					);
-
-					return	(
-								false
-							);
-				}
-				finally{
+	function TEST_BASIC_FORMAT_OPTION( ){
+		try{
+			const option = (
+				Option(
 					(
-						await	CLEAN_TEST_DIRECTORY( )
+						{
+							"hello": (
+								"world"
+							)
+						}
+					)
+				)
+				.option
+			);
+
+			option
+			.formatOption(
+				(
+					( { property, value } ) => (
+							(
+									(
+											property
+										===	"hello"
+									)
+							)
+						?	(
+								value
+								.toUpperCase( )
+							)
+						:	(
+								value
+							)
+					)
+				)
+			);
+
+			const actualValue = (
+				option
+				.hello
+			);
+
+			const testValue = (
+				"WORLD"
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-basic-format-option;",
+
+						"test basic format option;",
+
+						`must be equal, ${ actualValue }, ${ testValue };`
+					]
+				)
+			);
+
+			return	(
+						true
 					);
-				}
-			}
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
+
+			return	(
+						false
+					);
+		}
+	}
 );
 
 const TEST_CONSUME_FORMAT_OPTION = (
-	async	function TEST_CONSUME_FORMAT_OPTION( ){
-				(
-					await	CLEAN_TEST_DIRECTORY( )
-				);
-
-				(
-					await	SETUP_TEST_DIRECTORY( )
-				);
-
-				try{
-					const option = (
-						Option(
-							(
-								{
-									"hello": (
-										"world"
-									)
-								}
-							)
-						)
-						.option
-					);
-
+	function TEST_CONSUME_FORMAT_OPTION( ){
+		try{
+			const option = (
+				Option(
 					(
-						option
-						.formatOption(
-							(
-								( { property, value } ) => (
+						{
+							"hello": (
+								"world"
+							)
+						}
+					)
+				)
+				.option
+			);
+
+			(
+				option
+				.formatOption(
+					(
+						( { property, value } ) => (
+								(
 										(
-												(
-														property
-													===	"hello"
-												)
-										)
-									?	(
-											value
-											.toUpperCase( )
-										)
-									:	(
-											value
+												property
+											===	"hello"
 										)
 								)
-							)
+							?	(
+									value
+									.toUpperCase( )
+								)
+							:	(
+									value
+								)
 						)
-						.hello
+					)
+				)
+				.hello
+			);
+
+			const actualValue = (
+				option
+				.hello
+			);
+
+			const testValue = (
+				"world"
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-consume-format-option;",
+
+						"test consume format option;",
+
+						`must be equal, ${ actualValue }, ${ testValue };`
+					]
+				)
+			);
+
+			return	(
+						true
 					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
 
-					const actualValue = (
-						option
-						.hello
+			return	(
+						false
 					);
+		}
+	}
+);
 
-					const testValue = (
-						"world"
-					);
-
-					strictAssert
-					.equal(
-						(
-							actualValue
-						),
-
-						(
-							testValue
-						),
-
-						(
-							[
-								"#test-consume-format-option;",
-
-								"test consume format option;",
-
-								`must be equal, ${ actualValue }, ${ testValue };`
-							]
-						)
-					);
-
-					return	(
-								true
-							);
-				}
-				catch( error ){
-					console
-					.error(
-						(
-							error
-						)
-					);
-
-					return	(
-								false
-							);
-				}
-				finally{
+const TEST_BASIC_RESOLVE_OPTION = (
+	function TEST_BASIC_RESOLVE_OPTION( ){
+		try{
+			const option = (
+				Option(
 					(
-						await	CLEAN_TEST_DIRECTORY( )
+						{
+							"count": (
+								0
+							)
+						}
+					)
+				)
+				.option
+			);
+
+			option
+			.resolveOption(
+				(
+					( { property, value } ) => (
+							(
+									(
+											property
+										===	"count"
+									)
+							)
+						?	(
+									value
+								+	1
+							)
+						:	(
+								value
+							)
+					)
+				)
+			);
+
+			const actualValue = (
+				option
+				.count
+			);
+
+			const testValue = (
+				1
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-basic-resolve-option;",
+
+						"test basic resolve option;",
+
+						`must be equal, ${ actualValue }, ${ testValue };`
+					]
+				)
+			);
+
+			return	(
+						true
 					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
+
+			return	(
+						false
+					);
+		}
+	}
+);
+
+const TEST_CONSUME_RESOLVE_OPTION = (
+	function TEST_CONSUME_RESOLVE_OPTION( ){
+		try{
+			const option = (
+				Option(
+					(
+						{
+							"count": (
+								0
+							)
+						}
+					)
+				)
+				.option
+			);
+
+			(
+				option
+				.resolveOption(
+					(
+						( { property, value } ) => (
+								(
+										(
+												property
+											===	"count"
+										)
+								)
+							?	(
+										value
+									+	1
+								)
+							:	(
+									value
+								)
+						)
+					)
+				)
+				.count
+			);
+
+			const actualValue = (
+				option
+				.count
+			);
+
+			const testValue = (
+				1
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-consume-resolve-option;",
+
+						"test consume resolve option;",
+
+						`must be equal, ${ actualValue }, ${ testValue };`
+					]
+				)
+			);
+
+			return	(
+						true
+					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
+
+			return	(
+						false
+					);
+		}
+	}
+);
+
+const TEST_BASIC_TRANSFORM_OPTION = (
+	function TEST_BASIC_TRANSFORM_OPTION( ){
+		try{
+			const context = (
+				{
+					"hello": (
+						"world"
+					)
 				}
-			}
+			);
+
+			const option = (
+				Option(
+					(
+						context
+					)
+				)
+				.option
+			);
+
+			option
+			.transformOption(
+				(
+					"hello"
+				),
+
+				(
+					( { property, value, source, target } ) => (
+						value
+						.toUpperCase( )
+					)
+				)
+			);
+
+			const actualValue = (
+					(
+							option
+							.hello
+						===	"WORLD"
+					)
+
+				&&	(
+							context
+							.hello
+						===	"world"
+					)
+			);
+
+			const testValue = (
+				true
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-basic-transform-option;",
+
+						"test basic transform option;",
+
+						`must assert to, ${ testValue }`
+					]
+				)
+			);
+
+			return	(
+						true
+					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
+
+			return	(
+						false
+					);
+		}
+	}
+);
+
+const TEST_BASIC_TRANSFER_OPTION = (
+	function TEST_BASIC_TRANSFER_OPTION( ){
+		try{
+			const context = (
+				{
+					"hello": (
+						"world"
+					)
+				}
+			);
+
+			const option = (
+				Option(
+					(
+						context
+					)
+				)
+				.option
+			);
+
+			option
+			.transferOption(
+				(
+					"hello"
+				),
+
+				(
+					"hi"
+				)
+			);
+
+			(
+					option
+					.hello
+				=	(
+						"mundo"
+					)
+			);
+
+			const actualValue = (
+					(
+							option
+							.hello
+						===	"mundo"
+					)
+
+				&&	(
+							context
+							.hello
+						===	"mundo"
+					)
+
+				&&	(
+							option
+							.hi
+						===	"mundo"
+					)
+
+				&&	(
+							context
+							.hi
+						===	"mundo"
+					)
+			);
+
+			const testValue = (
+				true
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-basic-transfer-option;",
+
+						"test basic transfer option;",
+
+						`must assert to, ${ testValue }`
+					]
+				)
+			);
+
+			return	(
+						true
+					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
+
+			return	(
+						false
+					);
+		}
+	}
+);
+
+const TEST_BASIC_DETOUR_OPTION = (
+	function TEST_BASIC_DETOUR_OPTION( ){
+		try{
+			const context = (
+				{
+					"hello": (
+						"world"
+					)
+				}
+			);
+
+			const option = (
+				Option(
+					(
+						context
+					)
+				)
+				.option
+			);
+
+			option
+			.detourOption(
+				(
+					"hello"
+				),
+
+				(
+					"hi"
+				)
+			);
+
+			(
+					option
+					.hello
+				=	(
+						"mundo"
+					)
+			);
+
+			const actualValue = (
+					(
+							option
+							.hello
+						===	"world"
+					)
+
+				&&	(
+							context
+							.hello
+						===	"world"
+					)
+
+				&&	(
+							option
+							.hi
+						===	"mundo"
+					)
+
+				&&	(
+							context
+							.hi
+						===	"mundo"
+					)
+			);
+
+			const testValue = (
+				true
+			);
+
+			strictAssert
+			.equal(
+				(
+					actualValue
+				),
+
+				(
+					testValue
+				),
+
+				(
+					[
+						"#test-basic-detour-option;",
+
+						"test basic detour option;",
+
+						`must assert to, ${ testValue }`
+					]
+				)
+			);
+
+			return	(
+						true
+					);
+		}
+		catch( error ){
+			console
+			.error(
+				(
+					error
+				)
+			);
+
+			return	(
+						false
+					);
+		}
+	}
 );
 
 (
@@ -815,7 +1236,7 @@ const TEST_CONSUME_FORMAT_OPTION = (
 								),
 
 								"result": (
-									await	TEST_OPTION_INSTANCE( )
+									TEST_OPTION_INSTANCE( )
 								)
 							},
 
@@ -825,7 +1246,7 @@ const TEST_CONSUME_FORMAT_OPTION = (
 								),
 
 								"result": (
-									await	TEST_SET_GET_OPTION_ON_UNDEFINED_CONTEXT( )
+									TEST_SET_GET_OPTION_ON_UNDEFINED_CONTEXT( )
 								)
 							},
 
@@ -835,7 +1256,7 @@ const TEST_CONSUME_FORMAT_OPTION = (
 								),
 
 								"result": (
-										await	TEST_SET_GET_OPTION_WITH_CONTEXT( )
+									TEST_SET_GET_OPTION_WITH_CONTEXT( )
 								)
 							},
 
@@ -845,7 +1266,7 @@ const TEST_CONSUME_FORMAT_OPTION = (
 								),
 
 								"result": (
-										await	TEST_BASIC_FORMAT_OPTION( )
+									TEST_BASIC_FORMAT_OPTION( )
 								)
 							},
 
@@ -855,7 +1276,57 @@ const TEST_CONSUME_FORMAT_OPTION = (
 								),
 
 								"result": (
-										await	TEST_CONSUME_FORMAT_OPTION( )
+									TEST_CONSUME_FORMAT_OPTION( )
+								)
+							},
+
+							{
+								"test": (
+									"test basic resolve option"
+								),
+
+								"result": (
+									TEST_BASIC_RESOLVE_OPTION( )
+								)
+							},
+
+							{
+								"test": (
+									"test consume resolve option"
+								),
+
+								"result": (
+									TEST_CONSUME_RESOLVE_OPTION( )
+								)
+							},
+
+							{
+								"test": (
+									"test basic transform option"
+								),
+
+								"result": (
+									TEST_BASIC_TRANSFORM_OPTION( )
+								)
+							},
+
+							{
+								"test": (
+									"test basic transfer option"
+								),
+
+								"result": (
+									TEST_BASIC_TRANSFER_OPTION( )
+								)
+							},
+
+							{
+								"test": (
+									"test basic detour option"
+								),
+
+								"result": (
+									TEST_BASIC_DETOUR_OPTION( )
 								)
 							}
 						]
