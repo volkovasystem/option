@@ -1,5 +1,4 @@
 .editorconfig
-definition.json
 
 *.module.js
 *.test.js
