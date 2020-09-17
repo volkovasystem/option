@@ -39,7 +39,7 @@ const OPTION_CONTEXT = (
 );
 
 const Option = (
-	function Option( optionData, providerList ){
+	function Option( contextData, providerList ){
 		/*;
 			@definition:
 				@class:#Option
@@ -48,7 +48,7 @@ const Option = (
 					@description;
 				@class;
 
-				@parameter:#optionData
+				@parameter:#contextData
 					@type:
 							object
 						|	object:as:Option
@@ -102,7 +102,7 @@ const Option = (
 					)
 				);
 
-				const optionCache = (
+				const contextCache = (
 					Object
 					.assign(
 						...	(
@@ -238,7 +238,7 @@ const Option = (
 
 				return	(
 							[
-								optionCache,
+								contextCache,
 								providerCache
 							]
 						);
@@ -256,7 +256,7 @@ const Option = (
 		){
 			(
 					[
-						optionData,
+						contextData,
 						providerList
 					]
 				=	(
@@ -281,19 +281,19 @@ const Option = (
 			if(
 					(
 							typeof
-							optionData
+							contextData
 						==	"object"
 					)
 
 				&&	(
-							optionData
+							contextData
 						!==	null
 					)
 			){
 				(
 						this[ OPTION_CONTEXT ]
 					=	(
-							optionData
+							contextData
 						)
 				);
 			}
@@ -322,10 +322,10 @@ const Option = (
 
 			for(
 				let	property
-				in	optionData
+				in	contextData
 			){
 				let value = (
-					optionData[ property ]
+					contextData[ property ]
 				);
 
 				const self = (
@@ -334,21 +334,21 @@ const Option = (
 
 				this
 				.push(
-					function flush( { target: optionData } ){
+					function flush( { target: contextData } ){
 						if(
 								(
 										typeof
-										optionData
+										contextData
 									==	"object"
 								)
 
 							&&	(
-										optionData
+										contextData
 									!==	null
 								)
 						){
 							(
-									optionData[ property ]
+									contextData[ property ]
 								=	(
 										self[ OPTION_CONTEXT ][ property ]
 									)
@@ -376,7 +376,7 @@ const Option = (
 		else{
 			(
 					[
-						optionData,
+						contextData,
 						providerList
 					]
 				=	(
@@ -408,7 +408,7 @@ const Option = (
 							(
 								new	Option(
 										(
-											optionData
+											contextData
 										),
 
 										(
@@ -968,21 +968,21 @@ const Option = (
 
 											source
 											.push(
-												function flush( { target: optionData } ){
+												function flush( { target: contextData } ){
 													if(
 															(
 																	typeof
-																	optionData
+																	contextData
 																==	"object"
 															)
 
 														&&	(
-																	optionData
+																	contextData
 																!==	null
 															)
 													){
 														(
-																optionData[ property ]
+																contextData[ property ]
 															=	(
 																	source[ OPTION_CONTEXT ][ property ]
 																)
@@ -2206,7 +2206,7 @@ OptionPrototype.detourOption = (
 );
 
 OptionPrototype.flushOption = (
-	function flushOption( optionData ){
+	function flushOption( contextData ){
 		try{
 			return	(
 						this
@@ -2235,7 +2235,7 @@ OptionPrototype.flushOption = (
 											)(
 												(
 													{
-														target: optionData
+														target: contextData
 													}
 												)
 											)

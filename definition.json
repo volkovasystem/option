@@ -13,29 +13,29 @@
 				"class"
 			],
 			"format": [
-				"Option( optionData );"
+				"Option( contextData );"
 			],
 			"sample": [
-				"const { option, revokeOption } = Option( optionData );"
+				"const { option, revokeOption } = Option( contextData );"
 			],
 
 			"parameter": [
 				{
-					"title": "Option Data",
+					"title": "Context Data",
 					"description": [
 						"Data parameter context."
 					],
-					"namespace": "option-data",
+					"namespace": "context-data",
 					"property": [
-						"optionData"
+						"contextData"
 					],
 					"type": [
 						"object",
 						"object:as:Option"
 					],
 					"format": [
-						"Option( optionData );",
-						"Option( Option( optionData ).option );"
+						"Option( contextData );",
+						"Option( Option( contextData ).option );"
 					],
 					"sample": [
 						"const { option, revokeOption } = Option( { 'hello': 'world' } );"
