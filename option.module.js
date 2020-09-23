@@ -461,13 +461,19 @@ const Option = (
 												){
 													if(
 															(
-																	property
-																===	"forEach"
-															)
-
-														||	(
-																	property
-																===	"push"
+																	[
+																		"forEach",
+																		"push",
+																		"pop",
+																		"unshift",
+																		"shift"
+																	]
+																	.includes(
+																		(
+																			property
+																		)
+																	)
+																===	true
 															)
 													){
 														return	(
@@ -1304,6 +1310,172 @@ OptionPrototype.push = (
 
 			(
 				providerList
+			)
+		);
+
+		return	(
+					target
+				);
+	}
+);
+
+OptionPrototype.pop = (
+	function pop( ){
+		const source = (
+				(
+					this
+					.source
+				)
+
+			||	(
+					this
+				)
+		);
+
+		const target = (
+				(
+					this
+					.target
+				)
+
+			||	(
+					this
+				)
+		);
+
+		Array
+		.prototype
+		.pop
+		.apply(
+			(
+				source
+			)
+		);
+
+		return	(
+					target
+				);
+	}
+);
+
+OptionPrototype.unshift = (
+	function unshift( providerList ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
+
+		const source = (
+				(
+					this
+					.source
+				)
+
+			||	(
+					this
+				)
+		);
+
+		const target = (
+				(
+					this
+					.target
+				)
+
+			||	(
+					this
+				)
+		);
+
+		(
+				providerList
+			=	(
+					parameterList
+					.map(
+						(
+							( provider ) => (
+									(
+											(
+													typeof
+													provider
+												==	"object"
+											)
+
+										||	(
+													typeof
+													provider
+												!=	"function"
+											)
+									)
+								?	(
+										function data( { property, value, source, target } ){
+											return	(
+														provider
+													);
+										}
+									)
+								:	(
+										provider
+									)
+							)
+						)
+					)
+				)
+		);
+
+		Array
+		.prototype
+		.unshift
+		.apply(
+			(
+				source
+			),
+
+			(
+				providerList
+			)
+		);
+
+		return	(
+					target
+				);
+	}
+);
+
+OptionPrototype.shift = (
+	function shift( ){
+		const source = (
+				(
+					this
+					.source
+				)
+
+			||	(
+					this
+				)
+		);
+
+		const target = (
+				(
+					this
+					.target
+				)
+
+			||	(
+					this
+				)
+		);
+
+		Array
+		.prototype
+		.shift
+		.apply(
+			(
+				source
 			)
 		);
 
