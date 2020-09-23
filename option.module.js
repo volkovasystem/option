@@ -504,7 +504,8 @@ const Option = (
 																);
 													}
 												}
-												else if(
+												else
+												if(
 														(
 																typeof
 																Object
@@ -1320,7 +1321,7 @@ OptionPrototype.push = (
 );
 
 OptionPrototype.pop = (
-	function pop( ){
+	function pop( count = 1 ){
 		const source = (
 				(
 					this
@@ -1343,14 +1344,46 @@ OptionPrototype.pop = (
 				)
 		);
 
-		Array
-		.prototype
-		.pop
-		.apply(
+		if(
+				(
+						count
+					>	(
+							source
+							.length
+						)
+				)
+
+			||	(
+						count
+					>=	Infinity
+				)
+		){
 			(
-				source
-			)
-		);
+					count
+				=	(
+						source
+						.length
+					)
+			);
+		}
+
+		while(
+				(
+						(
+							count--
+						)
+					>	0
+				)
+		){
+			Array
+			.prototype
+			.pop
+			.apply(
+				(
+					source
+				)
+			);
+		}
 
 		return	(
 					target
@@ -1447,7 +1480,7 @@ OptionPrototype.unshift = (
 );
 
 OptionPrototype.shift = (
-	function shift( ){
+	function shift( count = 1 ){
 		const source = (
 				(
 					this
@@ -1470,17 +1503,75 @@ OptionPrototype.shift = (
 				)
 		);
 
-		Array
-		.prototype
-		.shift
-		.apply(
+		if(
+				(
+						count
+					>	(
+							source
+							.length
+						)
+				)
+
+			||	(
+						count
+					>=	Infinity
+				)
+		){
 			(
-				source
-			)
-		);
+					count
+				=	(
+						source
+						.length
+					)
+			);
+		}
+
+		while(
+				(
+						(
+							count--
+						)
+					>	0
+				)
+		){
+			Array
+			.prototype
+			.shift
+			.apply(
+				(
+					source
+				)
+			);
+		}
 
 		return	(
 					target
+				);
+	}
+);
+
+OptionPrototype.getFlowLength = (
+	function getFlowLength( ){
+		return	(
+					Array
+					.prototype
+					.filter
+					.call(
+						(
+							this
+						),
+
+						(
+							( provider ) => (
+									(
+											typeof
+											provider
+										==	"function"
+									)
+							)
+						)
+					)
+					.length
 				);
 	}
 );
@@ -1632,7 +1723,8 @@ OptionPrototype.formatOption = (
 				}
 			);
 		}
-		else if(
+		else
+		if(
 				(
 						typeof
 						formatProcedure
@@ -1664,7 +1756,8 @@ OptionPrototype.formatOption = (
 					)
 				);
 			}
-			else if(
+			else
+			if(
 					(
 							formatProcedure
 							.name
@@ -1826,7 +1919,8 @@ OptionPrototype.resolveOption = (
 				}
 			);
 		}
-		else if(
+		else
+		if(
 				(
 						typeof
 						resolveProcedure
@@ -1858,7 +1952,8 @@ OptionPrototype.resolveOption = (
 					)
 				);
 			}
-			else if(
+			else
+			if(
 					(
 							resolveProcedure
 							.name
@@ -1962,7 +2057,8 @@ OptionPrototype.transformOption = (
 								)
 							);
 						}
-						else if(
+						else
+						if(
 								(
 										typeof
 										parameter
@@ -1991,7 +2087,8 @@ OptionPrototype.transformOption = (
 								)
 							);
 						}
-						else if(
+						else
+						if(
 								(
 										Array
 										.isArray(
@@ -2020,7 +2117,8 @@ OptionPrototype.transformOption = (
 												)
 											);
 										}
-										else if(
+										else
+										if(
 												(
 														typeof
 														procedure
@@ -2221,7 +2319,8 @@ OptionPrototype.transferOption = (
 										}
 									);
 								}
-								else if(
+								else
+								if(
 										(
 												typeof
 												provider
@@ -2241,7 +2340,8 @@ OptionPrototype.transferOption = (
 										)
 									);
 								}
-								else if(
+								else
+								if(
 										(
 												typeof
 												provider
@@ -2387,7 +2487,8 @@ OptionPrototype.detourOption = (
 										}
 									);
 								}
-								else if(
+								else
+								if(
 										(
 												typeof
 												provider
@@ -2407,7 +2508,8 @@ OptionPrototype.detourOption = (
 										)
 									);
 								}
-								else if(
+								else
+								if(
 										(
 												typeof
 												provider
@@ -2631,16 +2733,12 @@ OptionPrototype.flushOption = (
 
 OptionPrototype.cleanOption = (
 	function cleanOption( ){
-		while(
-				(
-						this
-						.length
-					>	0
-				)
-		){
-			this
-			.pop( )
-		}
+		this
+		.pop(
+			(
+				Infinity
+			)
+		);
 
 		return	(
 					this
