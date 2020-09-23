@@ -1276,17 +1276,11 @@ OptionPrototype.push = (
 											(
 													typeof
 													provider
-												==	"object"
-											)
-
-										||	(
-													typeof
-													provider
 												!=	"function"
 											)
 									)
 								?	(
-										function data( { property, value, source, target } ){
+										function context( ){
 											return	(
 														provider
 													);
@@ -1435,17 +1429,11 @@ OptionPrototype.unshift = (
 											(
 													typeof
 													provider
-												==	"object"
-											)
-
-										||	(
-													typeof
-													provider
 												!=	"function"
 											)
 									)
 								?	(
-										function data( { property, value, source, target } ){
+										function context( ){
 											return	(
 														provider
 													);
@@ -1576,11 +1564,519 @@ OptionPrototype.getFlowLength = (
 	}
 );
 
+OptionPrototype.bindContext = (
+	function bindContext( property, provider ){
+		const parameterList = (
+			Array
+			.from(
+				(
+					arguments
+				)
+			)
+		);
+
+		(
+				property
+			=	(
+					parameterList
+					.find(
+						(
+							( parameter ) => (
+									(
+											typeof
+											parameter
+										==	"string"
+									)
+							)
+						)
+					)
+				)
+		);
+
+		(
+				provider
+			=	(
+					parameterList
+					.find(
+						(
+							( parameter ) => (
+									(
+											typeof
+											parameter
+										==	"function"
+									)
+							)
+						)
+					)
+				)
+		);
+
+		if(
+				(
+						typeof
+						provider
+					==	"function"
+				)
+		){
+			let bindProvider = (
+				undefined
+			);
+
+			if(
+					(
+							provider
+							.name
+						===	"bind"
+					)
+			){
+				(
+						bindProvider
+					=	(
+							provider
+						)
+				);
+			}
+			else{
+				(
+						bindProvider
+					=	(
+							function bind( { property, value, source, target } ){
+								return	(
+											provider(
+												(
+													{
+														"property": (
+															property
+														),
+
+														"value": (
+															value
+														),
+
+														"source": (
+															source
+														),
+
+														"target": (
+															target
+														)
+													}
+												)
+											)
+										);
+							}
+						)
+				);
+			}
+
+			if(
+					(
+							typeof
+							property
+						==	"string"
+					)
+
+				&&	(
+							property
+							.length
+						>	0
+					)
+			){
+				(
+						bindProvider
+						.property
+					=	(
+							property
+						)
+				);
+			}
+
+			this
+			.unshift(
+				(
+					bindProvider
+				)
+			);
+		}
+		else
+		if(
+				(
+						arguments
+						.length
+					>=	1
+				)
+
+			&&	(
+						arguments
+						.length
+					<=	2
+				)
+
+			&&	(
+						typeof
+						property
+					==	"string"
+				)
+
+			&&	(
+						property
+						.length
+					>	0
+				)
+		){
+			const value = (
+				parameterList
+				.slice(
+					(
+						1
+					)
+				)
+				.find(
+					(
+						( parameter ) => (
+								(
+										typeof
+										parameter
+									!=	"function"
+								)
+						)
+					)
+				)
+			);
+
+			let bindProvider = (
+				undefined
+			);
+
+			if(
+					(
+							value
+						!==	""
+					)
+
+				&&	(
+							isNaN(
+								(
+									value
+								)
+							)
+						!==	true
+					)
+
+				&&	(
+							typeof
+							value
+						!=	undefined
+					)
+
+				&&	(
+							value
+						!==	null
+					)
+			){
+				this
+				.unshift(
+					(
+						function context( ){
+							return	(
+										{
+											[ property ]: (
+												value
+											)
+										}
+									);
+						}
+					)
+				);
+
+				(
+						bindProvider
+					=	(
+							function bind( { property, source, target } ){
+								(
+										target[ property ]
+									=	(
+											source
+											.find(
+												(
+													( context ) => (
+															(
+																	Object
+																	.keys(
+																		(
+																			context
+																		)
+																	)
+																	.length
+																===	1
+															)
+
+														&&	(
+																	(
+																			property
+																		in	context
+																	)
+																===	true
+															)
+													)
+												)
+											)[ property ]
+										)
+								);
+
+								return	(
+											target
+										);
+							}
+						)
+				);
+			}
+			else{
+				(
+						bindProvider
+					=	(
+							function bind( { property, source, target } ){
+								(
+										target[ property ]
+									=	(
+											source
+										)
+								);
+
+								return	(
+											target
+										);
+							}
+						)
+				);
+			}
+
+			if(
+					(
+							typeof
+							property
+						==	"string"
+					)
+
+				&&	(
+							property
+							.length
+						>	0
+					)
+			){
+				(
+						bindProvider
+						.property
+					=	(
+							property
+						)
+				);
+			}
+
+			this
+			.unshift(
+				(
+					bindProvider
+				)
+			);
+		}
+		else{
+			throw	(
+						new	Error(
+								(
+									[
+										"#cannot-determine-bind-provider;",
+
+										"cannot determine bind provider;",
+
+										"@provider:",
+										`${ provider };`
+									]
+								)
+							)
+					);
+		}
+
+		return	(
+					this
+				);
+	}
+);
+
 OptionPrototype.getContext = (
 	function getContext( ){
-		return	(
-					this[ OPTION_CONTEXT ]
-				);
+		if(
+				(
+						this
+						.some(
+							(
+								( provider ) => (
+										(
+												typeof
+												provider
+											==	"function"
+										)
+
+									&&	(
+												provider
+												.name
+											===	"context"
+										)
+								)
+							)
+						)
+					===	true
+				)
+
+			&&	(
+						this
+						.some(
+							(
+								( provider ) => (
+										(
+												typeof
+												provider
+											==	"function"
+										)
+
+									&&	(
+												provider
+												.name
+											===	"bind"
+										)
+								)
+							)
+						)
+					===	true
+				)
+
+			&&	(
+					Object
+					.isExtensible(
+						(
+							this[ OPTION_CONTEXT ]
+						)
+					)
+				)
+		){
+			const contextList = (
+				this
+				.reduce(
+					(
+						( contextList, provider ) => (
+								(
+										(
+												typeof
+												provider
+											==	"function"
+										)
+
+									&&	(
+												provider
+												.name
+											===	"context"
+										)
+								)
+							?	(
+									(
+										contextList
+										.push(
+											(
+												provider( )
+											)
+										)
+									),
+
+									(
+										contextList
+									)
+								)
+							:	(
+									contextList
+								)
+						)
+					),
+
+					(
+						[ ]
+					)
+				)
+			);
+
+			const context = (
+				this
+				.reduce(
+					(
+						( context, provider ) => (
+								(
+										(
+												typeof
+												provider
+											==	"function"
+										)
+
+									&&	(
+												provider
+												.name
+											===	"bind"
+										)
+								)
+							?	(
+									(
+										provider(
+											(
+												{
+													"property": (
+														provider
+														.property
+													),
+
+													"source": (
+														contextList
+													),
+
+													"target": (
+														context
+													)
+												}
+											)
+										)
+									),
+
+									(
+										context
+									)
+								)
+							:	(
+									context
+								)
+						)
+					),
+
+					(
+						{ }
+					)
+				)
+			);
+
+			return	(
+						Object
+						.setPrototypeOf(
+							(
+								this[ OPTION_CONTEXT ]
+							),
+
+							(
+								context
+							)
+						)
+					);
+		}
+		else{
+			return	(
+						this[ OPTION_CONTEXT ]
+					);
+		}
 	}
 );
 
@@ -2033,178 +2529,194 @@ OptionPrototype.transformOption = (
 			)
 		);
 
-		flowList = (
-			parameterList
-			.slice(
-				(
-					1
-				)
-			)
-			.reduce(
-				(
-					( procedureList, parameter ) => {
-						if(
-								(
-										typeof
-										parameter
-									==	"function"
-								)
-						){
-							procedureList
-							.push(
-								(
-									parameter
-								)
-							);
-						}
-						else
-						if(
-								(
-										typeof
-										parameter
-									==	"string"
-								)
-						){
-							procedureList
-							.push(
-								(
-									this
-									.find(
-										( provider ) => (
-												(
-														typeof
-														provider
-													==	"function"
-												)
-
-											&&	(
-														provider
-														.name
-													===	parameter
-												)
-										)
+		(
+				property
+			=	(
+					parameterList
+					.find(
+						(
+							( parameter ) => (
+									(
+											typeof
+											parameter
+										==	"string"
 									)
-								)
-							);
-						}
-						else
-						if(
-								(
-										Array
-										.isArray(
-											(
-												parameter
-											)
-										)
-									===	true
-								)
-						){
-							parameter
-							.forEach(
-								(
-									( procedure ) => {
-										if(
-												(
-														typeof
-														procedure
-													==	"function"
-												)
-										){
-											procedureList
-											.push(
-												(
-													procedure
-												)
-											);
-										}
-										else
-										if(
-												(
-														typeof
-														procedure
-													==	"string"
-												)
-										){
-											procedureList
-											.push(
-												(
-													this
-													.find(
-														( provider ) => (
-																(
-																		typeof
-																		provider
-																	==	"function"
-																)
-
-															&&	(
-																		provider
-																		.name
-																	===	procedure
-																)
-														)
-													)
-												)
-											);
-										}
-										else{
-											throw	(
-														new	Error(
-																	(
-																		[
-																			"#cannot-determine-transform-procedure;",
-
-																			"cannot determine transform procedure;",
-
-																			"@parameter-list:",
-																			`${ parameterList };`
-																		]
-																	)
-																)
-													);
-										}
-									}
-								)
-							);
-						}
-						else{
-							throw	(
-										new	Error(
-													(
-														[
-															"#cannot-determine-transform-procedure;",
-
-															"cannot determine transform procedure;",
-
-															"@parameter-list:",
-															`${ parameterList };`
-														]
-													)
-												)
-									);
-						}
-
-						return	(
-									procedureList
-								);
-					}
-				),
-
-				(
-					[ ]
-				)
-			)
-			.filter(
-				(
-					( procedure ) => (
-							(
-									typeof
-									procedure
-								==	"function"
 							)
+						)
 					)
 				)
-			)
+		);
+
+		(
+				flowList
+			=	(
+					parameterList
+					.reduce(
+						(
+							( procedureList, parameter ) => {
+								if(
+										(
+												typeof
+												parameter
+											==	"function"
+										)
+								){
+									procedureList
+									.push(
+										(
+											parameter
+										)
+									);
+								}
+								else
+								if(
+										(
+												typeof
+												parameter
+											==	"string"
+										)
+								){
+									procedureList
+									.push(
+										(
+											this
+											.find(
+												( provider ) => (
+														(
+																typeof
+																provider
+															==	"function"
+														)
+
+													&&	(
+																provider
+																.name
+															===	parameter
+														)
+												)
+											)
+										)
+									);
+								}
+								else
+								if(
+										(
+												Array
+												.isArray(
+													(
+														parameter
+													)
+												)
+											===	true
+										)
+								){
+									parameter
+									.forEach(
+										(
+											( procedure ) => {
+												if(
+														(
+																typeof
+																procedure
+															==	"function"
+														)
+												){
+													procedureList
+													.push(
+														(
+															procedure
+														)
+													);
+												}
+												else
+												if(
+														(
+																typeof
+																procedure
+															==	"string"
+														)
+												){
+													procedureList
+													.push(
+														(
+															this
+															.find(
+																( provider ) => (
+																		(
+																				typeof
+																				provider
+																			==	"function"
+																		)
+
+																	&&	(
+																				provider
+																				.name
+																			===	procedure
+																		)
+																)
+															)
+														)
+													);
+												}
+												else{
+													throw	(
+																new	Error(
+																			(
+																				[
+																					"#cannot-determine-transform-procedure;",
+
+																					"cannot determine transform procedure;",
+
+																					"@parameter-list:",
+																					`${ parameterList };`
+																				]
+																			)
+																		)
+															);
+												}
+											}
+										)
+									);
+								}
+								else{
+									throw	(
+												new	Error(
+															(
+																[
+																	"#cannot-determine-transform-procedure;",
+
+																	"cannot determine transform procedure;",
+
+																	"@parameter-list:",
+																	`${ parameterList };`
+																]
+															)
+														)
+											);
+								}
+
+								return	(
+											procedureList
+										);
+							}
+						),
+
+						(
+							[ ]
+						)
+					)
+					.filter(
+						(
+							( procedure ) => (
+									(
+											typeof
+											procedure
+										==	"function"
+									)
+							)
+						)
+					)
+				)
 		);
 
 		const transformProcedure = (
