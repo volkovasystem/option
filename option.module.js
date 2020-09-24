@@ -92,154 +92,236 @@ const Option = (
 		*/
 
 		const resolveParameterList = (
-			function resolveParameterList( ){
-				const parameterList = (
-					Array
-					.from(
-						(
-							arguments
-						)
-					)
-				);
-
-				const contextCache = (
-					Object
-					.assign(
-						...	(
-								parameterList
-								.filter(
-									(
-										( parameter ) => (
-												(
-														typeof
-														parameter
-													==	"object"
-												)
-
-											&&	(
-														parameter
-													!==	null
-												)
-
-											&&	(
-														Array
-														.isArray(
-															(
-																parameter
-															)
-														)
-													!==	true
-												)
-										)
-									)
-								)
-								.concat(
-									(
-										[
-											{ }
-										]
-									)
-								)
-								.map(
-									( data ) => (
-											(
-													(
-															(
-																			data
-																instanceof	Option
-															)
-														===	true
-													)
-
-												&&	(
-															typeof
-															data
-															.getContext
-														==	"function"
-													)
-											)
-										?	(
-												data
-												.getContext( )
-											)
-										:	(
-												data
-											)
-									)
+			function resolveParameterList( parameterList ){
+				(
+						parameterList
+					=	(
+							Array
+							.from(
+								(
+									arguments
 								)
 							)
-					)
+						)
 				);
 
-				const providerCache = (
-					parameterList
-					.reduce(
-						(
-							( list, parameter ) => {
-								if(
-										(
-												typeof
-												parameter
-											==	"function"
-										)
-								){
-									list
-									.push(
-										(
-											parameter
-										)
-									);
-								}
-								else if(
-										(
-												Array
-												.isArray(
+				return	(
+							[
+								(
+									Object
+									.assign(
+										...	(
+												parameterList
+												.filter(
 													(
-														parameter
+														( parameter ) => (
+																(
+																		typeof
+																		parameter
+																	==	"object"
+																)
+
+															&&	(
+																		parameter
+																	!==	null
+																)
+
+															&&	(
+																		Array
+																		.isArray(
+																			(
+																				parameter
+																			)
+																		)
+																	!==	true
+																)
+														)
 													)
 												)
-											===	true
-										)
-								){
-									parameter
-									.forEach(
+												.concat(
+													(
+														[
+															{ }
+														]
+													)
+												)
+												.map(
+													( data ) => (
+															(
+																	(
+																			(
+																							data
+																				instanceof	Option
+																			)
+																		===	true
+																	)
+
+																&&	(
+																			typeof
+																			data
+																			.getContext
+																		==	"function"
+																	)
+															)
+														?	(
+																data
+																.getContext( )
+															)
+														:	(
+																data
+															)
+													)
+												)
+												.filter(
+													(
+														( context ) => (
+																(
+																		typeof
+																		context
+																		.constructor
+																	==	"function"
+																)
+
+															&&	(
+																		context
+																		.constructor
+																		.name
+																	===	"Object"
+																)
+														)
+													)
+												)
+											)
+									)
+								),
+
+								(
+									parameterList
+									.reduce(
 										(
-											( provider ) => {
+											( list, parameter ) => {
 												if(
 														(
 																typeof
-																provider
+																parameter
 															==	"function"
 														)
 												){
 													list
 													.push(
 														(
-															provider
+															parameter
 														)
 													);
 												}
+												else
+												if(
+														(
+																Array
+																.isArray(
+																	(
+																		parameter
+																	)
+																)
+															===	true
+														)
+												){
+													parameter
+													.forEach(
+														(
+															( provider ) => {
+																if(
+																		(
+																				typeof
+																				provider
+																			==	"function"
+																		)
+																){
+																	list
+																	.push(
+																		(
+																			provider
+																		)
+																	);
+																}
+																else
+																if(
+																		(
+																				typeof
+																				provider
+																			!=	"function"
+																		)
+
+																	&&	(
+																				typeof
+																				provider
+																				.constructor
+																			==	"function"
+																		)
+
+																	&&	(
+																				provider
+																				.constructor
+																				.name
+																			!==	"Object"
+																		)
+																){
+																	list
+																	.push(
+																		function context( ){
+																			return	(
+																						provider
+																					);
+																		}
+																	);
+																}
+															}
+														)
+													);
+												}
+												else
+												if(
+														(
+																typeof
+																parameter
+															!=	"function"
+														)
+
+													&&	(
+																typeof
+																parameter
+																.constructor
+															==	"function"
+														)
+
+													&&	(
+																parameter
+																.constructor
+																.name
+															!==	"Object"
+														)
+												){
+													list
+													.push(
+														function context( ){
+															return	(
+																		parameter
+																	);
+														}
+													);
+												}
+
+												return	(
+															list
+														);
 											}
+										),
+
+										(
+											[ ]
 										)
-									);
-								}
-
-								return	(
-											list
-										);
-							}
-						),
-
-						(
-							[ ]
-						)
-					)
-				);
-
-				return	(
-							[
-								contextCache,
-								providerCache
+									)
+								)
 							]
 						);
 			}
@@ -543,6 +625,17 @@ const Option = (
 																	target
 																)
 															)
+														);
+											}
+											else
+											if(
+													(
+															property
+														===	"revokeOption"
+													)
+											){
+												return	(
+															revokeOption
 														);
 											}
 
@@ -2003,62 +2096,6 @@ OptionPrototype.getContext = (
 				)
 			);
 
-			const context = (
-				this
-				.reduce(
-					(
-						( context, provider ) => (
-								(
-										(
-												typeof
-												provider
-											==	"function"
-										)
-
-									&&	(
-												provider
-												.name
-											===	"bind"
-										)
-								)
-							?	(
-									(
-										provider(
-											(
-												{
-													"property": (
-														provider
-														.property
-													),
-
-													"source": (
-														contextList
-													),
-
-													"target": (
-														context
-													)
-												}
-											)
-										)
-									),
-
-									(
-										context
-									)
-								)
-							:	(
-									context
-								)
-						)
-					),
-
-					(
-						{ }
-					)
-				)
-			);
-
 			return	(
 						Object
 						.setPrototypeOf(
@@ -2067,7 +2104,59 @@ OptionPrototype.getContext = (
 							),
 
 							(
-								context
+								this
+								.reduce(
+									(
+										( context, provider ) => (
+												(
+														(
+																typeof
+																provider
+															==	"function"
+														)
+
+													&&	(
+																provider
+																.name
+															===	"bind"
+														)
+												)
+											?	(
+													(
+														provider(
+															(
+																{
+																	"property": (
+																		provider
+																		.property
+																	),
+
+																	"source": (
+																		contextList
+																	),
+
+																	"target": (
+																		context
+																	)
+																}
+															)
+														)
+													),
+
+													(
+														context
+													)
+												)
+											:	(
+													context
+												)
+										)
+									),
+
+									(
+										{ }
+									)
+								)
 							)
 						)
 					);
