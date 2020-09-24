@@ -2221,6 +2221,86 @@ OptionPrototype.formatOption = (
 				(
 						typeof
 						formatProcedure
+					==	"function"
+				)
+		){
+			if(
+					(
+							formatProcedure
+							.name
+						===	"format"
+					)
+
+				||	(
+							formatProcedure
+							.name
+							.indexOf(
+								(
+									"format"
+								)
+							)
+						===	0
+					)
+			){
+				this
+				.push(
+					(
+						formatProcedure
+					)
+				);
+			}
+			else
+			if(
+					(
+							formatProcedure
+							.name
+							.length
+						<=	0
+					)
+			){
+				this
+				.push(
+					function format( { property, value } ){
+						return	(
+									formatProcedure(
+										(
+											{
+												"property": (
+													property
+												),
+
+												"value": (
+													value
+												)
+											}
+										)
+									)
+								);
+					}
+				);
+			}
+			else{
+				throw	(
+							new	Error(
+								(
+									[
+										"#cannot-determine-format-procedure;",
+
+										"cannot determine format procedure;",
+
+										"@format-procedure:",
+										`${ formatProcedure };`
+									]
+								)
+							)
+						);
+			}
+		}
+		else
+		if(
+				(
+						typeof
+						formatProcedure
 					==	"string"
 				)
 
@@ -2308,86 +2388,6 @@ OptionPrototype.formatOption = (
 				}
 			);
 		}
-		else
-		if(
-				(
-						typeof
-						formatProcedure
-					==	"function"
-				)
-		){
-			if(
-					(
-							formatProcedure
-							.name
-						===	"format"
-					)
-
-				||	(
-							formatProcedure
-							.name
-							.indexOf(
-								(
-									"format"
-								)
-							)
-						===	0
-					)
-			){
-				this
-				.push(
-					(
-						formatProcedure
-					)
-				);
-			}
-			else
-			if(
-					(
-							formatProcedure
-							.name
-							.length
-						<=	0
-					)
-			){
-				this
-				.push(
-					function format( { property, value } ){
-						return	(
-									formatProcedure(
-										(
-											{
-												"property": (
-													property
-												),
-
-												"value": (
-													value
-												)
-											}
-										)
-									)
-								);
-					}
-				);
-			}
-			else{
-				throw	(
-							new	Error(
-										(
-											[
-												"#cannot-determine-format-procedure;",
-
-												"cannot determine format procedure;",
-
-												"@format-procedure:",
-												`${ formatProcedure };`
-											]
-										)
-									)
-						);
-			}
-		}
 		else{
 			throw	(
 						new	Error(
@@ -2413,6 +2413,86 @@ OptionPrototype.formatOption = (
 
 OptionPrototype.resolveOption = (
 	function resolveOption( resolveProcedure ){
+		if(
+				(
+						typeof
+						resolveProcedure
+					==	"function"
+				)
+		){
+			if(
+					(
+							resolveProcedure
+							.name
+						===	"resolve"
+					)
+
+				||	(
+							resolveProcedure
+							.name
+							.indexOf(
+								(
+									"resolve"
+								)
+							)
+						===	0
+					)
+			){
+				this
+				.push(
+					(
+						resolveProcedure
+					)
+				);
+			}
+			else
+			if(
+					(
+							resolveProcedure
+							.name
+							.length
+						<=	0
+					)
+			){
+				this
+				.push(
+					function resolve( { property, value } ){
+						return	(
+									resolveProcedure(
+										(
+											{
+												"property": (
+													property
+												),
+
+												"value": (
+													value
+												)
+											}
+										)
+									)
+								);
+					}
+				);
+			}
+			else{
+				throw	(
+							new	Error(
+										(
+											[
+												"#cannot-determine-resolve-procedure;",
+
+												"cannot determine resolve procedure;",
+
+												"@resolve-procedure:",
+												`${ resolveProcedure };`
+											]
+										)
+									)
+						);
+			}
+		}
+		else
 		if(
 				(
 						typeof
@@ -2503,86 +2583,6 @@ OptionPrototype.resolveOption = (
 							);
 				}
 			);
-		}
-		else
-		if(
-				(
-						typeof
-						resolveProcedure
-					==	"function"
-				)
-		){
-			if(
-					(
-							resolveProcedure
-							.name
-						===	"resolve"
-					)
-
-				||	(
-							resolveProcedure
-							.name
-							.indexOf(
-								(
-									"resolve"
-								)
-							)
-						===	0
-					)
-			){
-				this
-				.push(
-					(
-						resolveProcedure
-					)
-				);
-			}
-			else
-			if(
-					(
-							resolveProcedure
-							.name
-							.length
-						<=	0
-					)
-			){
-				this
-				.push(
-					function resolve( { property, value } ){
-						return	(
-									resolveProcedure(
-										(
-											{
-												"property": (
-													property
-												),
-
-												"value": (
-													value
-												)
-											}
-										)
-									)
-								);
-					}
-				);
-			}
-			else{
-				throw	(
-							new	Error(
-										(
-											[
-												"#cannot-determine-resolve-procedure;",
-
-												"cannot determine resolve procedure;",
-
-												"@resolve-procedure:",
-												`${ resolveProcedure };`
-											]
-										)
-									)
-						);
-			}
 		}
 		else{
 			throw	(
